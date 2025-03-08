@@ -1,0 +1,13 @@
+{
+  "tsconfig": "tsconfig.typedoc.json",
+  "entryPoints": ["client/**/*.ts", "client/**/*.tsx", "server/**/*.ts"],
+  "out": "docs/html",
+  "exclude": ["node_modules", "dist"],
+  "includeVersion": false,
+  "excludeExternals": true,
+  "excludePrivate": true,
+  "excludeProtected": true,
+  "hideGenerator": true,
+  "theme": "default",
+  "readme": "README.md",
+}

@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "allowJs": false,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "outDir": "./dist-server",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "exclude": ["dist"],
+  "include": ["server/**/*.ts"]
+}
