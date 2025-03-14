@@ -2,6 +2,12 @@ const HtmlWebPackPlugin = require("html-webpack-plugin") ;
 const Dotenv = require('dotenv-webpack');
 
 module.exports = {
+  devServer: {
+    historyApiFallback: true,
+  },
+  output: {
+    publicPath: "/"
+  },
   entry: "./client",
   module: {
     rules: [
@@ -18,7 +24,7 @@ module.exports = {
             'style-loader',
             'css-loader'
         ]
-      }
+      },
     ],
   },
   plugins: [
@@ -26,7 +32,7 @@ module.exports = {
       template: "./client/index.html",
       filename: "./index.html",
     }),
-    new Dotenv()
+    new Dotenv(),
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js']

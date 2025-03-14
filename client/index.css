@@ -1,3 +1,10 @@
+:root {
+  --background-color: #F5EDED;
+  --contrast-color: #E2DAD6;
+  --primary-color: #6482AD;
+  --secondary-color: #7FA1C3;
+}
+
 html {
   font-size: 62.5%;
   font-family: "Open Sans", sans-serif;
@@ -6,4 +13,26 @@ html {
 * {
   margin: 0;
   padding: 0;
+}
+
+
+html {
+  background-color: var(--background-color);
+}
+
+.a, .b, .c {
+  width: 200px;
+  height: 200px;
+}
+
+.a {
+  background-color: var(--primary-color);
+}
+
+.b {
+  background-color: var(--secondary-color);
+}
+
+.c {
+  background-color: var(--contrast-color);
 }
