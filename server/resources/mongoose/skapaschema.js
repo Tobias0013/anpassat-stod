@@ -97,7 +97,7 @@ async function testPasswordEncryption() {
 }
 
 // Kör funktionen
-testPasswordEncryption();
+// testPasswordEncryption();
 
 // Exportera modellerna
 module.exports = { Individual, CareGiver, Account };
