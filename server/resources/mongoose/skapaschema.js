@@ -64,7 +64,7 @@ const Account = mongoose.model("Account", accountSchema);
 async function testPasswordEncryption() {
   try {
     await mongoose.connect(
-      "mongodb+srv://användare:lösenord@dinurl.mongodb.net/dindatabas"
+      "mongodb+srv://anpassatstodxhkr:Hkrextrajobb1@anpassat-stod.jkde9.mongodb.net/?retryWrites=true&w=majority&appName=Anpassat-stod"
     );
     console.log("✅ MongoDB anslutet");
 
