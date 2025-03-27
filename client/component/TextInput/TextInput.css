@@ -1,0 +1,26 @@
+/**
+ * .text-input
+ *
+ * A basic, auto-expanding text area.
+ */
+
+ .text-input {
+    padding: 1rem;
+    font-size: 1.6rem;
+    border: 1px solid var(--primary-color);
+    border-radius: 0.5rem;
+    background-color: white;
+    transition: border-color 0.2s ease;
+    resize: none;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  
+  /**
+   * Focus state
+   */
+  .text-input:focus {
+    outline: none;
+    border-color: var(--secondary-color);
+  }
+  
