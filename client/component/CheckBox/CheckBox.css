@@ -1,0 +1,41 @@
+/**
+ * .checkbox-wrapper
+ *
+ * Container for the checkbox input and label.
+ *
+ * @layout    Aligns checkbox and label horizontally with spacing.
+ * @behavior  Makes entire row clickable via cursor pointer.
+ */
+ .checkbox-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+  
+  /**
+   * .checkbox
+   *
+   * The visual checkbox input element.
+   *
+   * @size     Custom size for better visibility.
+   * @theming  Uses primary theme color on check (via accent-color).
+   */
+  .checkbox {
+    width: 1.6rem;
+    height: 1.6rem;
+    accent-color: var(--primary-color);
+  }
+  
+  /**
+   * .checkbox-label
+   *
+   * Text label shown next to the checkbox.
+   *
+   * @typography Matches base font size for UI consistency.
+   */
+  .checkbox-label {
+    font-size: 1.6rem;
+  }
+  
+  
