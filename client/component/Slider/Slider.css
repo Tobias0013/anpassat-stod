@@ -1,0 +1,27 @@
+/**
+ * .slider-wrapper
+ *
+ * Container for the slider and optional label.
+ */
+ .slider-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  /**
+   * .slider
+   *
+   * Custom range input.
+   *
+   * @range     5 steps (1–5), styled track & thumb.
+   * @width     Default width is capped at 300px for layout consistency.
+   *            This can be overridden using a custom class passed via `className`.
+   */
+  .slider {
+    width: 100%;
+    max-width: 300px;
+    accent-color: var(--primary-color);
+  }
+  
+  
