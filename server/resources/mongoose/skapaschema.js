@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require("./db");
 const bcrypt = require("bcrypt");
 
 // Individual Schema-definition
@@ -55,49 +55,115 @@ accountSchema.pre("save", async function (next) {
   next();
 });
 
+// Forms Schema-definition
+const formsSchema = new mongoose.Schema({
+  type: {
+    type: String,
+    enum: ["Kommun/LSS", "Habilitering", "Försäkringskassan"],
+    required: true,
+  },
+  answers: [
+    {
+      id: { type: Number, required: true },
+      need: { type: Boolean, required: true },
+      futureNeed: { type: Boolean, required: true },
+      futureNeedDate: { type: Date, default: null },
+      priority: { type: Number, enum: [1, 2, 3, 4, 5], required: true },
+      applied: { type: Boolean, required: true },
+      appliedDate: { type: Date, default: null },
+      granted: { type: Boolean, required: true },
+      grantedDate: { type: Date, default: null },
+      meetStandard: { type: Boolean, required: true },
+      feedback: { type: String, required: true },
+    },
+  ],
+  complete: { type: Boolean, required: true },
+  lastUpdatedDate: { type: Date, required: true, default: Date.now },
+});
+
+// Event Schema-definition
+const eventSchema = new mongoose.Schema({
+  eventDate: { type: Date, required: true },
+  category: {
+    type: String,
+    enum: ["Kommun/LSS", "Habilitering", "Försäkringskassan"],
+    required: true,
+  },
+  message: { type: String, required: true },
+});
+
 // Skapa modeller
 const Individual = mongoose.model("Individual", individualSchema);
 const CareGiver = mongoose.model("CareGiver", careGiverSchema);
 const Account = mongoose.model("Account", accountSchema);
+const Form = mongoose.model("Form", formsSchema);
+const Event = mongoose.model("Event", eventSchema);
 
-// Testa att skapa en ny Account med krypterat lösenord
-async function testPasswordEncryption() {
+// Testfunktion för att verifiera scheman
+async function testSchemas() {
   try {
-    await mongoose.connect(
-      "mongodb+srv://anpassatstodxhkr:Hkrextrajobb1@anpassat-stod.jkde9.mongodb.net/?retryWrites=true&w=majority&appName=Anpassat-stod"
-    );
     console.log("✅ MongoDB anslutet");
 
-    const newCareGiver = new CareGiver({
-      name: "TestCareGiver",
-      age: 40,
+    const caregiver = await new CareGiver({
+      name: "Anna",
+      age: 30,
       county: "Stockholm",
+      gender: "female",
+    }).save();
+
+    const individual = await new Individual({
+      name: "Erik",
+      age: 25,
+      county: "Uppsala",
       gender: "male",
-      introQuestions: [],
-      forms: [],
-      event: [],
+    }).save();
+
+    const account = await new Account({
+      username: "erik123",
+      mail: "erik@mail.com",
+      password: "password123",
+      careGiverId: caregiver._id,
+    }).save();
+
+    const form = await new Form({
+      type: "Kommun/LSS",
+      answers: [
+        {
+          id: 1,
+          need: true,
+          futureNeed: false,
+          priority: 3,
+          applied: true,
+          granted: false,
+          meetStandard: true,
+          feedback: "Bra jobbat",
+        },
+      ],
+      complete: false,
+    }).save();
+
+    const event = await new Event({
+      eventDate: new Date(),
+      category: "Kommun/LSS",
+      message: "Event created successfully",
+    }).save();
+
+    console.log("✅ Alla scheman sparade:", {
+      caregiver,
+      individual,
+      account,
+      form,
+      event,
     });
-
-    const savedCareGiver = await newCareGiver.save();
-
-    const testAccount = new Account({
-      username: "testuser",
-      mail: "test@mail.com",
-      password: "HemligtLosen123", // kommer automatiskt hash:as
-      careGiverId: savedCareGiver._id,
-    });
-
-    const savedAccount = await testAccount.save();
-    console.log("✅ Sparad account med krypterat lösenord:", savedAccount);
   } catch (error) {
-    console.error("❌ Fel vid test av kryptering:", error);
+    console.error("❌ Fel vid test:", error);
   } finally {
     mongoose.connection.close();
   }
 }
 
-// Kör funktionen
-// testPasswordEncryption();
+// Kör testfunktionen
+//testSchemas(); // Avkommentera för att köra testfunktionen
 
 // Exportera modellerna
-module.exports = { Individual, CareGiver, Account };
+module.exports = { Individual, CareGiver, Account, Form, Event };
