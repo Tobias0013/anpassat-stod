@@ -16,6 +16,9 @@ import ColorPicker from "./component/colorPicker";
 import "./index.css";
 import TestPage from "./page/test/test";
 import Header from "./component/header/header";
+import LoginPage from "./page/auth/login"
+import RegisterPage from "./page/auth/register";
+import LogOut from "./page/auth/logout";
 
 const rootElem = document.getElementById("root");
 
@@ -42,6 +45,9 @@ root.render(
           }
         />
         <Route path="/test" element={<TestPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/logout" element={<LogOut/>} />
       </Routes>
     </BrowserRouter>
   </>

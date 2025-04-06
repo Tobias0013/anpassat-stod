@@ -1,0 +1,131 @@
+.auth-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: var(--background-color);
+}
+
+.auth-container {
+  border-radius: 10px;
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  position: relative;
+  overflow: hidden;
+  width: 50rem;
+  height: 48rem;
+}
+
+/* Auth form */
+.auth-h1 {
+  margin: 0;
+  display: block;
+  font-size: 4rem;
+  margin-top: 3rem;
+  margin-bottom: 3rem;
+  margin-left: 1rem;
+  margin-right: 1rem;
+  font-weight: bold;
+}
+
+.auth-form {
+  background-color: var(--contrast-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0 50px;
+  height: 100%;
+  text-align: center;
+}
+
+.auth-text-input {
+  background-color: #eee;
+  border: none;
+  padding: 1.2rem 1.5rem;
+  margin: 1rem 0;
+  width: 100%;
+  font-size: 2rem;
+}
+
+.auth-checkbox-container {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.auth-checkbox {
+  cursor: pointer;
+}
+
+.auth-checkbox > input {
+  width: 2rem;
+  height: 2rem;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+.auth-checkbox > label {
+  font-size: 2rem;
+  user-select: none;
+  cursor: pointer;
+}
+
+.auth-a {
+  color: #333;
+  font-size: 14px;
+  text-decoration: none;
+  margin: 15px 0;
+  cursor: pointer;
+  text-align: center;
+}
+
+.error-message {
+  color: red;
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  white-space: pre-line;
+}
+
+.auth-btn-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.auth-btn {
+  white-space: nowrap;
+}
+
+.auth-btn.alt {
+  border: 1px solid var(--primary-color);
+  background-color: #fff;
+  color: var(--primary-color);
+}
+
+.auth-btn.alt:hover {
+  background-color: #eee;
+}
+
+@media only screen and (orientation: portrait) {
+  .auth-container {
+    margin-bottom: 10rem;
+  }
+
+  .auth-btn {
+    font-size: 1.5rem;
+  }
+
+  .auth-btn-container {
+    flex-direction: column;
+  }
+
+  .auth-btn {
+    margin-bottom: 0;
+  }
+  .auth-btn-container {
+    flex-direction: column-reverse;
+  }
+}

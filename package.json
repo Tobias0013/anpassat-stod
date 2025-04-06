@@ -59,6 +59,7 @@
     "axios": "^1.8.2",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
+    "check-password-strength": "^3.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
