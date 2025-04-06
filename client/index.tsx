@@ -14,6 +14,7 @@ import Clock from "./component/clock";
 import Form from "./component/form";
 import ColorPicker from "./component/colorPicker";
 import "./index.css";
+import TestPage from "./page/test/test";
 
 const rootElem = document.getElementById("root");
 
@@ -38,6 +39,7 @@ root.render(
             </>
           }
         />
+        <Route path="/test" element={<TestPage />} />
       </Routes>
     </BrowserRouter>
   </>
