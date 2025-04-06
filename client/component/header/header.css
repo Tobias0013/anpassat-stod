@@ -1,0 +1,195 @@
+/* Author: Tobias Vinblad */
+/* CSS file for header component */
+
+header {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  display: flex;
+  width: 100%;
+  height: fit-content;
+  align-items: center;
+  border-bottom: #acc4b5 solid 1px;
+  background-color: var(--contrast-color);
+}
+
+header a {
+  text-decoration: none;
+  color: black;
+}
+
+/* Header Logo */
+
+.header-logo {
+  width: fit-content;
+  height: fit-content;
+  align-items: center;
+  margin-left: 4rem;
+}
+
+.header-logo > p {
+  font-family: "Libre Franklin", "Helvetica Neue", helvetica, arial, sans-serif;
+  color: #3a3a3a;
+  text-align: left;
+  font-size: 4rem;
+  line-height: 4.2rem;
+  font-weight: 700;
+}
+
+.header-logo:hover {
+  opacity: 0.7;
+}
+
+/* Navigation */
+
+.header-nav-icon {
+  visibility: hidden;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.header-nav {
+  margin-left: auto;
+}
+
+.header-navbar {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  list-style-type: none;
+  padding-left: 0;
+  margin-right: 4rem;
+}
+
+.header-navbar > li > a {
+  padding: 1rem 1.2rem;
+  text-decoration: none;
+  font-size: 2rem;
+  white-space: nowrap;
+}
+
+.header-navbar > li > a.current {
+  color: var(--primary-color);
+}
+
+.header-navbar > li > a[href="/login"] {
+  background-color: var(--secondary-color);
+  color: black;
+  margin-right: 0.5rem;
+  margin-left: 0.5rem;
+  border-radius: 10px;
+  opacity: 0.8;
+}
+
+.header-navbar > li > a[href="/login"]:hover {
+  opacity: 0.5;
+}
+
+.header-navbar > li :hover {
+  background-color: rgb(237, 237, 237);
+  border-radius: 9px;
+}
+
+/* Mobile Styling */
+@media only screen and (orientation: portrait) {
+  header {
+    border-bottom: #acc4b5 solid 0px;
+    margin-bottom: 1rem;
+  }
+
+  html,
+  body {
+    overflow-x: hidden;
+  }
+  body {
+    position: relative;
+  }
+
+  header {
+    flex-direction: column;
+    height: fit-content;
+  }
+
+  /* Header Logo */
+
+  .header-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: fit-content;
+  }
+
+  .header-logo {
+    margin-left: 0;
+    p {
+      text-align: center;
+    }
+  }
+
+  /* Navigation */
+
+  .header-nav-icon {
+    visibility: visible;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    margin-right: 1rem;
+  }
+
+  .header-nav-icon > span {
+    font-size: 4.5rem;
+  }
+
+  .header-navbar {
+    gap: 0;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .header-navbar.second {
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .header-nav {
+    overflow: hidden;
+    transition: all 400ms;
+    height: 0rem;
+    width: 100%;
+  }
+
+  .header-navbar > li {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+  .header-navbar > li > a {
+    margin: 0;
+    padding: 1rem 0;
+    display: block;
+  }
+
+  .header-navbar > li > a[href="/login"] {
+    margin: .5rem 0;
+    padding: 1rem 0;
+    border-radius: 10px;
+    opacity: 0.8;
+    width: 95%;
+  }
+
+  .header-navbar:not(:last-of-type) > li:first-of-type {
+    border-top: rgb(128, 128, 128, 50%) 2px solid;
+  }
+  .header-navbar > li:not(:last-child) {
+    border-bottom: rgb(128, 128, 128, 50%) 2px solid;
+  }
+}
