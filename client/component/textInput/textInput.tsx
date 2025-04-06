@@ -22,15 +22,14 @@ export default function TextInput(props: TextInputProps) {
   };
 
   return (
-    <div className={`text-input-container ${className || ""}`} style={styles}>
-      <input
-        className="text-input"
-        type={type}
-        value={value}
-        onChange={handleChange}
-        placeholder={placeholder}
-        disabled={disabled}
-      />
-    </div>
+    <input
+      className={`text-input ${className}`}
+      type={type}
+      value={value}
+      onChange={handleChange}
+      placeholder={placeholder}
+      disabled={disabled}
+      style={styles}
+    />
   );
 }
