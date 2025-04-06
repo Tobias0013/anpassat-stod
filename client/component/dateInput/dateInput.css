@@ -1,0 +1,30 @@
+.date-input-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem; 
+  font-family: Arial, sans-serif;
+}
+
+.date-input-label {
+  font-size: 2rem;
+  color: #333;
+}
+
+.date-input-field {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.date-input-field:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 4px var(--primary-color);
+}
+
+.date-input-field:disabled {
+  background-color: var(--contrast-color);
+  cursor: not-allowed;
+}
