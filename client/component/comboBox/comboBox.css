@@ -1,0 +1,38 @@
+.combo-box-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-family: Arial, sans-serif;
+}
+
+.combo-box-label {
+  font-size: 2rem;
+  color: #333;
+}
+
+.combo-box-select {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  outline: none;
+  background-color: #fff;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.combo-box-select:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 4px var(--primary-color);
+}
+
+.combo-box-select:hover {
+  border-color: var(--primary-color);
+}
+
+.combo-box-select:disabled {
+  background-color: var(--contrast-color);
+  border-color: var(--contrast-color);
+  cursor: not-allowed;
+  color: #999;
+}
