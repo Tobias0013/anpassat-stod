@@ -1,0 +1,29 @@
+.buttonComp{
+  margin-top: 3rem;
+  margin-bottom: 7rem;
+  border-radius: 20px;
+  border: 1px solid var(--primary-color);
+  background-color: var(--primary-color);
+  color: var(--background-color);
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding: 1.2rem 4.5rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.buttonComp:hover {
+  filter: brightness(0.9);
+}
+
+.buttonComp:active {
+  filter: brightness(0.8);
+}
+
+.buttonComp:disabled {
+  background-color: var(--contrast-color);
+  border: 1px solid var(--contrast-color);
+  color: var(--background-color);
+  cursor: not-allowed;
+}
