@@ -1,7 +1,7 @@
 import React from 'react';
-import './TextInput.css';
+import './textArea.css';
 
-type TextInputProps = {
+type TextAreaProps = {
   value: string;
   onChange: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
   placeholder?: string;
@@ -20,7 +20,7 @@ type TextInputProps = {
  * @param {string} [props.className] - Optional class name for styling overrides.
  * @returns {JSX.Element} A styled, auto-expanding textarea element.
  */
-const TextInput: React.FC<TextInputProps> = ({
+const TextArea: React.FC<TextAreaProps> = ({
   value,
   onChange,
   placeholder = '',
@@ -46,5 +46,5 @@ const TextInput: React.FC<TextInputProps> = ({
   );
 };
 
-export default TextInput;
+export default TextArea;
 
