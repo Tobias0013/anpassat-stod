@@ -37,7 +37,7 @@ const TextArea: React.FC<TextAreaProps> = ({
   return (
     <textarea
       id={id}
-      className={`text-input ${className}`}
+      className={`text-area ${className}`}
       value={value}
       onChange={handleChange}
       placeholder={placeholder}
