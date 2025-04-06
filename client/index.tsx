@@ -15,6 +15,7 @@ import Form from "./component/form";
 import ColorPicker from "./component/colorPicker";
 import "./index.css";
 import TestPage from "./page/test/test";
+import Header from "./component/header/header";
 
 const rootElem = document.getElementById("root");
 
@@ -27,6 +28,7 @@ const root = ReactDOM.createRoot(rootElem);
 root.render(
   <>
     <BrowserRouter>
+      <Header />
       <Routes>
         <Route index path="/" element={<h1>Index</h1>} />
         <Route
