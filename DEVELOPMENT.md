@@ -1,5 +1,13 @@
 # Development Guide
 
+## Technology Stack
+
+The project uses the following technologies:
+
+- **Frontend**: The client-side is built using [React](https://reactjs.org/), a popular JavaScript library for building user interfaces.
+- **Backend**: The server-side is implemented with [Express](https://expressjs.com/), a minimal and flexible Node.js web application framework.
+- **TypeScript**: Both the frontend and backend are written in [TypeScript](https://www.typescriptlang.org/).
+
 ## Project Folder Structure
 
 The project is organized into the following main directories:
@@ -7,15 +15,9 @@ The project is organized into the following main directories:
 ```
 ├── client/
 │   ├── components/
-│   │   ├── header/
-│   │   │   ├── header.css
-│   │   │   └── header.tsx
 │   ├── controllers/
 │   │   └── api/
 │   ├── pages/
-│   │   ├── login/
-│   │   │   ├── login.css
-│   │   │   └── login.tsx
 │   ├── resources/
 │   │   ├── text/
 │   │   └── types/
@@ -41,15 +43,9 @@ The project is organized into the following main directories:
 
 - **client/**: Contains the client-side code of the application.
   - **components/**: Reusable UI components.
-    - **header/**: Header component files.
-      - **header.css**: Styles for the header component.
-      - **header.tsx**: Header component implementation.
   - **controllers/**: Controllers for handling API/network interactions.
     - **api/**: API interaction controllers.
   - **pages/**: Page components representing different pages.
-    - **login/**: Login page files.
-      - **login.css**: Styles for the login page.
-      - **login.tsx**: Login page implementation.
   - **resources/**: Additional resources for the client.
     - **text/**: Text resources.
     - **types/**: Type definitions.
