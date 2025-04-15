@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
+require('dotenv').config();
 
 // Individual Schema-definition
 const individualSchema = new mongoose.Schema({
@@ -64,7 +65,7 @@ const Account = mongoose.model("Account", accountSchema);
 async function testPasswordEncryption() {
   try {
     await mongoose.connect(
-      "mongodb+srv://anpassatstodxhkr:Hkrextrajobb1@anpassat-stod.jkde9.mongodb.net/?retryWrites=true&w=majority&appName=Anpassat-stod"
+      process.env.URI
     );
     console.log("✅ MongoDB anslutet");
 

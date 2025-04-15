@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
+require('dotenv').config();
 
 // Din anslutningssträng från MongoDB Atlas:
-const uri =
-  "mongodb+srv://anpassatstodxhkr:Hkrextrajobb1@anpassat-stod.jkde9.mongodb.net/?retryWrites=true&w=majority&appName=Anpassat-stod";
+const uri = process.env.URI;
 
 // Anslutning till databasen
 mongoose
