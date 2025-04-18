@@ -25,22 +25,18 @@ export const getIndividualsByCareGiverId = async (req: Request, res: Response) =
 };
 
 export const createCareGiver = async (req: Request, res: Response) => {
-  try {
-    const { name, age, county, gender } = req.body;
-
-    const newCareGiver = new CareGiver({
-      name,
-      age,
-      county,
-      gender,
-      introQuestions: [],
-      forms: [],
-      event: [],
-    });
-
-    const saved = await newCareGiver.save();
-    res.status(201).json({ careGiver: saved });
-  } catch (err) {
-    res.status(500).json({ error: (err as Error).message });
-  }
-};
+    try {
+      const { name, county } = req.body;
+  
+      const newCareGiver = new CareGiver({
+        name,
+        county,
+        individuals: [],
+      });
+  
+      const saved = await newCareGiver.save();
+      res.status(201).json({ careGiver: saved });
+    } catch (err) {
+      res.status(500).json({ error: (err as Error).message });
+    }
+  };
