@@ -17,6 +17,7 @@ import express from "express";
 import { port } from "./controller/config";
 import router from "./routes";
 import cors from "cors";
+import "./resources/mongoose/db"; // Import the database connection
 
 const app = express();
 
