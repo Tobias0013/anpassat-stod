@@ -1,13 +1,13 @@
 import { Request, Response } from "express";
 import { CareGiver } from "../../resources/mongoose/careGiverModel";
 import { Individual } from "../../resources/mongoose/individualModel";
-; 
 
 export const getCareGiverById = async (req: Request, res: Response) => {
   try {
     const caregiver = await CareGiver.findById(req.params.id);
-    if (!caregiver) return res.status(404).json({
-         message: "Not found" });
+    if (!caregiver) {
+      res.status(404).json({ message: "Caregiver not found" });
+    }
     res.json({ careGiver: caregiver });
   } catch (err) {
     res.status(500).json({ error: (err as Error).message });
