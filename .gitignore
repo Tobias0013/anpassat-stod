@@ -40,3 +40,6 @@ Thumbs.db
 # Ignore temporary files
 *.tmp
 *.temp
+
+# Ignore encryption keys
+/keys/
