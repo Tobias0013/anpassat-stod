@@ -7,11 +7,13 @@
 import { Router } from "express";
 import tmp from "./tmp";
 import careGiverRouter from "./careGiverRoutes";
+import publicKeyRouter from "./keyRoutes";
 
 const router = Router();
 
 
 router.use("/tmp", tmp);
 router.use("/care-givers", careGiverRouter);
+router.use("/public-key", publicKeyRouter);
 
 export default router;

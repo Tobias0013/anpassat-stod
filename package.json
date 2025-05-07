@@ -24,7 +24,8 @@
     "clean": "npm run clean:modules && npm run clean:doc && npm run clean:dist",
     "clean:modules": "rm -r -f ./node_modules",
     "clean:dist": "rm -r -f ./dist && rm -r -f ./dist-server",
-    "clean:doc": "rm -r -f ./docs"
+    "clean:doc": "rm -r -f ./docs",
+    "generate:keys": "ts-node server/resources/scripts/generateKeys.ts"
   },
   "keywords": [],
   "author": "",
