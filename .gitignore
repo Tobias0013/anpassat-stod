@@ -42,4 +42,4 @@ Thumbs.db
 *.temp
 
 # Ignore encryption keys
-/keys/
+*/keys/
