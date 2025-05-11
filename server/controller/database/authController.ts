@@ -6,7 +6,7 @@ import bcrypt from "bcrypt";
 import { decryptField } from "../../resources/scripts/decryption";
 
 /**
- * Registers a new account.
+ * Registers a new account (Request body fields must be encrypted).
  * 
  * @param req - The request object.
  * @param res - The response object.
@@ -31,7 +31,7 @@ export const registerAccount = async (req: Request, res: Response) => {
 };
 
 /**
- * Authenticates an account and returns JWT token upon correct credentials.
+ * Authenticates an account and returns JWT token upon correct credentials (Request body fields must be encrypted).
  * 
  * @param req - The request object.
  * @param res - The response object.
