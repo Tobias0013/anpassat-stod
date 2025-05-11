@@ -1,0 +1,57 @@
+import { Request, Response } from "express";
+import { Account } from "../../resources/mongoose/accountModel";
+import { signJwt } from "../../resources/jwt/jwtHandler";
+
+import bcrypt from "bcrypt";
+
+/**
+ * Registers a new account.
+ * 
+ * @param req - The request object.
+ * @param res - The response object.
+ */
+export const registerAccount = async (req: Request, res: Response) => {
+  try {
+    const { username, password, mail } = req.body;
+
+    const newAccount = new Account({
+      username,
+      password,
+      mail
+    });
+
+    const savedAccount = await newAccount.save();
+    res.status(201).json({ account: savedAccount });
+  } catch (err) {
+    res.status(500).json({ message: "Error registering account", error: (err as Error).message});
+  }
+};
+
+/**
+ * Authenticates an account and returns JWT token upon correct credentials.
+ * 
+ * @param req - The request object.
+ * @param res - The response object.
+ */
+export const authAccount = async (req: Request, res: Response) => {
+  try {
+    const { username, password } = req.body;
+
+    const accountToAuth = await Account.findOne({ username: username});
+    if (!accountToAuth) {
+      res.status(404).json({ message: "Incorrect credentials" });
+    } else {
+      const passwordMatch = await bcrypt.compare(password, accountToAuth.password);
+
+      if(!passwordMatch) {
+        res.status(404).json({ message: "Incorrect credentials" });
+      }
+        else {
+          const token = signJwt({ id: accountToAuth._id, username: accountToAuth.username });
+          res.status(200).json({ token });
+      }
+    }
+  } catch(err){
+    res.status(500).json({ message: "Error authenticating account", error: (err as Error).message});
+  }
+}

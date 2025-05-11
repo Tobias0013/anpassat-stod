@@ -8,6 +8,7 @@ import { Router } from "express";
 import tmp from "./tmp";
 import careGiverRouter from "./careGiverRoutes";
 import publicKeyRouter from "./keyRoutes";
+import authRouter from "./authRoutes";
 
 const router = Router();
 
@@ -15,5 +16,6 @@ const router = Router();
 router.use("/tmp", tmp);
 router.use("/care-givers", careGiverRouter);
 router.use("/public-key", publicKeyRouter);
+router.use("/auth", authRouter);
 
 export default router;
