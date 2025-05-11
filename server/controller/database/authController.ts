@@ -3,6 +3,7 @@ import { Account } from "../../resources/mongoose/accountModel";
 import { signJwt } from "../../resources/jwt/jwtHandler";
 
 import bcrypt from "bcrypt";
+import { decryptField } from "../../resources/scripts/decryption";
 
 /**
  * Registers a new account.
@@ -12,7 +13,9 @@ import bcrypt from "bcrypt";
  */
 export const registerAccount = async (req: Request, res: Response) => {
   try {
-    const { username, password, mail } = req.body;
+    const username = decryptField(req.body.username);
+    const password = decryptField(req.body.password);
+    const mail = decryptField(req.body.mail);
 
     const newAccount = new Account({
       username,
@@ -35,7 +38,8 @@ export const registerAccount = async (req: Request, res: Response) => {
  */
 export const authAccount = async (req: Request, res: Response) => {
   try {
-    const { username, password } = req.body;
+    const username = decryptField(req.body.username);
+    const password = decryptField(req.body.password);
 
     const accountToAuth = await Account.findOne({ username: username});
     if (!accountToAuth) {
