@@ -17,14 +17,19 @@ export const registerAccount = async (req: Request, res: Response) => {
     const password = decryptField(req.body.password);
     const mail = decryptField(req.body.mail);
 
-    const newAccount = new Account({
-      username,
-      password,
-      mail
-    });
-
-    const savedAccount = await newAccount.save();
-    res.status(201).json({ account: savedAccount });
+    const usernameAlreadyExists = await Account.findOne({ username: username });
+    const mailAlreadyExists = await Account.findOne({ mail: mail });
+    if (usernameAlreadyExists || mailAlreadyExists) {
+      res.status(409).json({ message: "Account already exists" });
+    } else {
+      const newAccount = new Account({
+        username,
+        password,
+        mail
+      });
+      const savedAccount = await newAccount.save();
+      res.status(201).json({ account: savedAccount });
+    }
   } catch (err) {
     res.status(500).json({ message: "Error registering account", error: (err as Error).message});
   }
