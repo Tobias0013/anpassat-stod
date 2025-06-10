@@ -1,0 +1,105 @@
+/* Section container for caregiver page */
+.caregiver-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: var(--background-color);
+  }
+  
+  .caregiver-container {
+    border-radius: 10px;
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+    position: relative;
+    overflow: hidden;
+    width: 50rem;
+    height: 48rem;
+    background-color: var(--contrast-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+  }
+  
+  .caregiver-h1 {
+    margin: 0;
+    font-size: 4rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+  
+  /* Form container for inputs, centered and stacked */
+  .caregiver-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  
+  /* Text input styling */
+  .caregiver-text-input {
+    background-color: #eee;
+    border: none;
+    padding: 1.2rem 1.5rem;
+    margin: 1rem 0;
+    width: 80%;
+    font-size: 2rem;
+    border-radius: 8px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
+  }
+  
+  /* Container for the button, centered and with spacing */
+  .caregiver-btn-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+  }
+  
+  /* Save button styling */
+  .caregiver-save-btn {
+    padding: 1rem 3rem;
+    border: none;
+    border-radius: 5px;
+    background-color: var(--primary-color);
+    color: #fff;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .caregiver-save-btn:hover {
+    background-color: #0069d9;
+  }
+  
+  /* Error message styling similar to register page */
+  .error-message {
+    font-size: 1.75rem;
+    color: #dc143c; /* red color for errors */
+    margin-top: 1rem;
+    text-align: center;
+  }
+
+
+  .plus-button {
+    font-size: 3rem;
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: background-color 0.3s, transform 0.2s;
+  }
+  
+  .plus-button:hover {
+    background-color: #0056b3;
+    transform: scale(1.1);
+  }
+  
