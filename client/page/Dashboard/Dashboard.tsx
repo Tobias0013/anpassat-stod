@@ -27,8 +27,8 @@ export default function Dashboard() {
           {/* Action buttons for the individual */}
           <div className="button-stack">
             <ButtonComp
-              text="Enkäter"
-              onClick={() => console.log(`${person.name}: Enkäter`)}
+              text="Forumlär"
+              onClick={() => console.log(`${person.name}: Forumlär`)}
             />
             <ButtonComp
               text="Resultat"
