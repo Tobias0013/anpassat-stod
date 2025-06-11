@@ -1,4 +1,5 @@
-// Development only: using localhost. For production, set REACT_APP_API_URL in environment variables or some other suitable way
+// Frontend Development only
+// This request should include a JWT Authorization header in the future
 const port = process.env.PORT;
 
 /**
