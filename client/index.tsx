@@ -19,6 +19,8 @@ import Header from "./component/header/header";
 import LoginPage from "./page/auth/login"
 import RegisterPage from "./page/auth/register";
 import LogOut from "./page/auth/logout";
+import CareGiverSelection from "./page/careGiver/careGiverSelection";
+import CareGiverCreation from "./page/careGiver/careGiverCreation";
 
 const rootElem = document.getElementById("root");
 
@@ -48,6 +50,8 @@ root.render(
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/logout" element={<LogOut/>} />
+        <Route path="/caregiver" element={<CareGiverSelection />} />
+        <Route path="/caregiver/create" element={<CareGiverCreation />} />
       </Routes>
     </BrowserRouter>
   </>
