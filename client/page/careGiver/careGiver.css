@@ -102,4 +102,34 @@
     background-color: #0056b3;
     transform: scale(1.1);
   }
+  .caregiver-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  /* For the caregiver selection card-like button */
+.caregiver-select-button {
+  width: 80%;
+  background-color: var(--primary-color);
+  color: #fff;
+  font-size: 2rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  border-radius: 12px;
+  text-align: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, transform 0.2s;
+}
+
+.caregiver-select-button:hover {
+  background-color: #0056b3;
+  transform: scale(1.02);
+}
+  
+  
   
