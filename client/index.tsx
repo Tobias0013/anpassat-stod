@@ -20,6 +20,7 @@ import LoginPage from "./page/auth/login"
 import RegisterPage from "./page/auth/register";
 import LogOut from "./page/auth/logout";
 import Dashboard from "./page/Dashboard/Dashboard";
+import EventOfTheDay from "./page/eventOfTheDay/eventOfTheDay";
 
 const rootElem = document.getElementById("root");
 
@@ -50,6 +51,7 @@ root.render(
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/logout" element={<LogOut/>} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/eventOfTheDay" element={<EventOfTheDay />} />
       </Routes>
     </BrowserRouter>
   </>

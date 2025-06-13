@@ -2,7 +2,7 @@ import React from "react";
 import IndividualCard from "../../component/Individual/IndividualCard";
 import ButtonComp from "../../component/buttonComp/buttonComp";
 import "./Dashboard.css";
-
+import { useNavigate } from "react-router-dom";
 /**
  * Static list of individuals (mock data).
  * 
@@ -15,6 +15,8 @@ const individuals = [
 ];
 
 export default function Dashboard() {
+
+  const navigate = useNavigate();
   return (
     <div className="dashboard-container">
       {individuals.map((person) => (
@@ -40,7 +42,7 @@ export default function Dashboard() {
             />
             <ButtonComp
               text="Dagens händelse"
-              onClick={() => console.log(`${person.name}: Dagens händelse`)}
+              onClick={() => navigate("/eventOfTheDay")}
             />
           </div>
         </div>
