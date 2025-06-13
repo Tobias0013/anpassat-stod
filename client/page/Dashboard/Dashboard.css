@@ -56,17 +56,20 @@
     background-color: var(--primary-color);
     color: white;
     border: none;
-    border-radius: 2px;
+    border-radius: 12px; /* more rounded corners */
     font-size: 1.6rem;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-    padding: 0.6rem 1.5rem;
-    line-height: 1.2;
-    margin-bottom: 4px;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 0.8rem 2rem; /* more balanced padding */
+    line-height: 1.4;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* subtle depth */
   }
   
   .button-stack button:hover {
     background-color: var(--secondary-color);
+    transform: translateY(-2px); /* lift effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* deeper hover shadow */
   }
   
   
