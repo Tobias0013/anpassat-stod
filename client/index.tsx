@@ -16,6 +16,7 @@ import ColorPicker from "./component/colorPicker";
 import "./index.css";
 import TestPage from "./page/test/test";
 import Header from "./component/header/header";
+import Footer from "./component/footer/footer";
 import LoginPage from "./page/auth/login"
 import RegisterPage from "./page/auth/register";
 import LogOut from "./page/auth/logout";
@@ -53,6 +54,7 @@ root.render(
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/eventOfTheDay" element={<EventOfTheDay />} />
       </Routes>
+      <Footer />
     </BrowserRouter>
   </>
 );
