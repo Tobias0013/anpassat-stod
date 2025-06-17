@@ -72,4 +72,35 @@
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* deeper hover shadow */
   }
   
+  .create-button-wrapper {
+    align-self: flex-start;
+  }
+  
+  .create-button {
+    background-color: green;
+    color: white;
+    font-weight: 600;
+    font-size: 1.6rem;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+  }
+  
+  .create-button:hover {
+    background-color: darkgreen;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  .dashboard-inner {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 900px;
+    gap: 2rem;
+  }
+  
   

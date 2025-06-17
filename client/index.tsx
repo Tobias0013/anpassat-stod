@@ -22,6 +22,7 @@ import RegisterPage from "./page/auth/register";
 import LogOut from "./page/auth/logout";
 import Dashboard from "./page/Dashboard/Dashboard";
 import EventOfTheDay from "./page/eventOfTheDay/eventOfTheDay";
+import CreateIndividualPage from "./page/individual/individual";
 
 const rootElem = document.getElementById("root");
 
@@ -52,6 +53,7 @@ root.render(
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/logout" element={<LogOut/>} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/createIndividual" element={<CreateIndividualPage />} />
         <Route path="/eventOfTheDay" element={<EventOfTheDay />} />
       </Routes>
       <Footer />
