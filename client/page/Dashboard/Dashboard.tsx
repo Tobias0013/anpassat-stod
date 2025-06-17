@@ -18,7 +18,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const handleCreateNew = () => {
     console.log("Skapa ny individ clicked");
-    // navigate("/createIndividual");
+    navigate("/createIndividual");
   };
 
   return (
