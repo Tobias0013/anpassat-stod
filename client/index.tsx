@@ -14,6 +14,7 @@ import Clock from "./component/clock";
 import Form from "./component/form";
 import ColorPicker from "./component/colorPicker";
 import "./index.css";
+import HomePage from "./page/home/home";
 import TestPage from "./page/test/test";
 import Header from "./component/header/header";
 import Footer from "./component/footer/footer";
@@ -37,7 +38,7 @@ root.render(
     <BrowserRouter>
       <Header />
       <Routes>
-        <Route index path="/" element={<h1>Index</h1>} />
+        <Route index path="/" element={<HomePage />} />
         <Route
           path="/color"
           element={
