@@ -1,0 +1,53 @@
+.formlist-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: var(--background-color);
+  }
+  
+  .formlist-container {
+    background-color: var(--contrast-color);
+    padding: 5rem 6rem;
+    border-radius: 12px;
+    max-width: 500px; /* Was 400px */
+    width: 100%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+    text-align: center;
+  }
+  
+  .formlist-heading {
+    margin: 0;
+    font-size: 4rem;
+    font-weight: bold;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    text-align: center;
+    color: #000;
+  }
+  
+  .formlist-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .formlist-button {
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 1.6rem;
+    padding: 1.2rem 2rem;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .formlist-button:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+  }
+  
