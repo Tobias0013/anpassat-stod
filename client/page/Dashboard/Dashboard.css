@@ -102,5 +102,22 @@
     max-width: 900px;
     gap: 2rem;
   }
+
+  .individual-description {
+    flex: 1;
+    padding: 0 2rem;
+    font-size: 1.4rem;
+    line-height: 1.6;
+    color: var(--text-color);
+  }
+  
+  .individual-description p {
+    margin: 0.3rem 0;
+  }
+  
+  .individual-description .label {
+    font-weight: 600;
+  }
+  
   
   
