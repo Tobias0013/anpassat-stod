@@ -60,7 +60,7 @@ export default function Dashboard() {
             <div className="button-stack">
               <ButtonComp
                 text="Forumlär"
-                onClick={() => console.log(`${person.name}: Forumlär`)}
+                onClick={() => navigate("/formList")}
               />
               <ButtonComp
                 text="Resultat"

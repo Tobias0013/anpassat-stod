@@ -24,6 +24,7 @@ import LogOut from "./page/auth/logout";
 import Dashboard from "./page/Dashboard/Dashboard";
 import EventOfTheDay from "./page/eventOfTheDay/eventOfTheDay";
 import CreateIndividualPage from "./page/individual/individual";
+import FormList from "./page/formList/formList";
 
 const rootElem = document.getElementById("root");
 
@@ -56,6 +57,7 @@ root.render(
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/createIndividual" element={<CreateIndividualPage />} />
         <Route path="/eventOfTheDay" element={<EventOfTheDay />} />
+        <Route path="/formList" element={<FormList />} />
       </Routes>
       <Footer />
     </BrowserRouter>
