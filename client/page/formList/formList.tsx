@@ -1,6 +1,7 @@
 import React from "react";
 import ButtonComp from "../../component/buttonComp/buttonComp";
 import "./formList.css";
+import { useNavigate } from "react-router-dom";
 
 /**
  * FormList component shows a list of available forms.
@@ -11,7 +12,7 @@ import "./formList.css";
  * @returns {JSX.Element} The rendered form list.
  */
 export default function FormList() {
-  // Placeholder form list
+  const navigate = useNavigate();
   const forms = ["Habilitering"];
 
   return (
@@ -23,7 +24,7 @@ export default function FormList() {
             <ButtonComp
               key={index}
               text={form}
-              onClick={() => console.log(`Valt formulär: ${form}`)}
+              onClick={() => navigate("/formPage")}
               className="formlist-button"
             />
           ))}

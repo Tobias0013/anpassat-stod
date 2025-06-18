@@ -25,6 +25,7 @@ import Dashboard from "./page/Dashboard/Dashboard";
 import EventOfTheDay from "./page/eventOfTheDay/eventOfTheDay";
 import CreateIndividualPage from "./page/individual/individual";
 import FormList from "./page/formList/formList";
+import FormPage from "./page/formPage/formPage";
 
 const rootElem = document.getElementById("root");
 
@@ -58,6 +59,7 @@ root.render(
         <Route path="/createIndividual" element={<CreateIndividualPage />} />
         <Route path="/eventOfTheDay" element={<EventOfTheDay />} />
         <Route path="/formList" element={<FormList />} />
+        <Route path="/formPage" element={<FormPage />} />
       </Routes>
       <Footer />
     </BrowserRouter>
