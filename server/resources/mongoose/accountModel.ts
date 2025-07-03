@@ -5,14 +5,12 @@ export interface IAccount extends Document {
   username: string;
   mail: string;
   password: string;
-  careGiverId: mongoose.Types.ObjectId[];
 }
 
 const accountSchema = new Schema<IAccount>({
   username: { type: String, required: true },
   mail: { type: String, required: true },
   password: { type: String, required: true },
-  careGiverId: [{ type: Schema.Types.ObjectId, ref: "CareGiver" }],
 });
 
 accountSchema.pre<IAccount>("save", async function (next) {
