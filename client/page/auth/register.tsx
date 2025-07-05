@@ -9,10 +9,15 @@ import {
 } from "../../controller/passwordChecker";
 import TextInput from "./../../component/textInput/textInput";
 import ButtonComp from "./../../component/buttonComp/buttonComp";
+import { registerUser } from "../../controller/authcontroller";
+
 
 /**
- * RegisterPage component allows users to register by providing a username, password, and an optional admin status.
- * It includes form validation and password strength checking.
+ * RegisterPage component allows users to register by providing an email and password.
+ * It includes client-side form validation, password strength evaluation, and integrates
+ * encrypted registration via the backend.
+ *
+ * On successful registration, the user is redirected to the dashboard.
  *
  * @example
  * return (
@@ -21,7 +26,7 @@ import ButtonComp from "./../../component/buttonComp/buttonComp";
  *
  * @returns {JSX.Element} The rendered component.
  *
- * @throws {Error} If login fails, an error message is set.
+ * @throws {Error} If registration fails, an error message is displayed.
  */
 
 export default function RegisterPage() {
@@ -49,9 +54,14 @@ export default function RegisterPage() {
       setErrorMessage("Lösenordet är för svagt");
       return;
     }
-    //TODO: Add register logic here when backend is ready
-    console.log("Email:", email);
-    console.log("Password", password);
+    //Register logic
+    try {
+      const result = await registerUser(email, password);
+      console.log("Register success:", result);
+      navigate("/dashboard");
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    }
   };
 
   const onPasswordChange = (value: string) => {
