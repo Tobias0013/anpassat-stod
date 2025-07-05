@@ -50,7 +50,7 @@ export default function LoginPage() {
         setErrorMessage(result.message || "Fel vid inloggning");
       }
     } catch (err) {
-      setErrorMessage("Internal Server Error");
+      setErrorMessage("Ogiltigt lösenord eller e-postadress");
     }
   };
 
