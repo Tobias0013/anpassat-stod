@@ -4,25 +4,26 @@ import { useNavigate } from "react-router-dom";
 import "./auth.css";
 import TextInput from "./../../component/textInput/textInput";
 import ButtonComp from "./../../component/buttonComp/buttonComp";
+import { loginUser } from "../../controller/authcontroller";
 
 /**
  * LoginPage component renders a login form for user authentication.
+ * It includes input validation, client-side encryption of credentials,
+ * and handles JWT-based login through the backend.
+ *
+ * On successful login, the JWT token is stored in localStorage and the user
+ * is redirected to the dashboard.
+ *
+ * @example
+ * return (
+ *   <LoginPage />
+ * )
  *
  * @returns {JSX.Element} The rendered login page component.
  *
- * @remarks
- * This component uses React hooks for state management and navigation.
- * It handles form submission, validates input fields, and displays error messages.
- *
- * @example
- * ```
- * retrun (
- *   return <LoginPage />;
- * )
- * ```
- *
- * @throws {Error} If login fails, an error message is set.
+ * @throws {Error} If login fails or the server returns an error, a message is displayed.
  */
+
 export default function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
@@ -39,9 +40,18 @@ export default function LoginPage() {
       setErrorMessage("Ogiltig e-postadress");
       return;
     }
-    //TODO: Add login logic here when backend is ready
-    console.log("Email:", email);
-    console.log("Password", password);
+    //Login logic
+    try {
+      const result = await loginUser(email, password);
+      if (result.token) {
+        localStorage.setItem("token", result.token);
+        navigate("/dashboard");
+      } else {
+        setErrorMessage(result.message || "Fel vid inloggning");
+      }
+    } catch (err) {
+      setErrorMessage("Internal Server Error");
+    }
   };
 
   return (
