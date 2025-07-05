@@ -25,7 +25,8 @@ export const registerAccount = async (req: Request, res: Response) => {
       const newAccount = new Account({
         username,
         password,
-        mail
+        mail,
+        individualsId: []
       });
       const savedAccount = await newAccount.save();
       res.status(201).json({ account: savedAccount });
