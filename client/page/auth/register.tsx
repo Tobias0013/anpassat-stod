@@ -58,7 +58,7 @@ export default function RegisterPage() {
     try {
       const result = await registerUser(email, password);
       console.log("Register success:", result);
-      navigate("/dashboard");
+      navigate("/login");
     } catch (err: any) {
       setErrorMessage(err.message);
     }
