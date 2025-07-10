@@ -5,6 +5,7 @@ import "../auth/auth.css"; // Reuse same CSS for consistent styling
 import TextInput from "../../component/textInput/textInput";
 import ButtonComp from "../../component/buttonComp/buttonComp";
 import CheckBox from "../../component/CheckBox/CheckBox";
+import { createIndividualAPI } from "../../controller/individualsController";
 
 /**
  * CreateIndividualPage component allows creation of a new individual
@@ -39,28 +40,31 @@ export default function CreateIndividualPage() {
 
   const [errorMessage, setErrorMessage] = useState("");
 
-  const onFormSubmit = () => {
+  const onFormSubmit = async () => {
     setErrorMessage("");
-
+  
     if (!name || !age || !municipality || (!isMale && !isFemale && !isNone)) {
       setErrorMessage("Fyll i alla fält");
       return;
     }
-
-    const gender = isMale ? "Man" : isFemale ? "Kvinna" : "Inget";
-
-    // TODO: Send this to the database in the future when backend is ready
+  
+    const gender: "male" | "female" | "none" = isMale ? "male" : isFemale ? "female" : "none";
+  
     const individualData = {
-      namn: name,
-      alder: age,
-      kommun: municipality,
-      kon: gender,
+      name,
+      age: parseInt(age),
+      county: municipality,
+      gender,
     };
-
-    // Placeholder: log data to console
-    console.log("Sending individual to backend:", individualData);
-
-    // TODO: Implement backend API call here
+  
+    try {
+      const newIndividual = await createIndividualAPI(individualData);
+      console.log("Individual created:", newIndividual);
+      navigate("/dashboard"); // or wherever you want to redirect
+    } catch (err: any) {
+      console.error("Failed to create individual:", err.message);
+      setErrorMessage(err.message || "Något gick fel");
+    }
   };
 
   return (
