@@ -10,6 +10,7 @@ import publicKeyRouter from "./keyRoutes";
 import authRouter from "./authRoutes";
 import accountRouter from "./accountRoutes";
 import individualRouter from "./individualRoutes";
+import formRouter from "./forms"; 
 
 const router = Router();
 
@@ -19,5 +20,6 @@ router.use("/public-key", publicKeyRouter);
 router.use("/auth", authRouter);
 router.use("/accounts", accountRouter);
 router.use("/individuals", individualRouter);
+router.use("/forms", formRouter); 
 
 export default router;

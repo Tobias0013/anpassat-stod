@@ -1,34 +1,27 @@
-
 import mongoose from 'mongoose';
 
-const answerSchema = new mongoose.Schema({
-  question: { type: String, required: true },
-  needNo: { type: Boolean, default: false },
+const AnswerSchema = new mongoose.Schema({
+  id: { type: Number, required: true },
+  need: { type: Boolean, default: false },
   futureNeed: { type: Boolean, default: false },
-  futureNeedDate: { type: String, default: null }, // or enum if restricted
-  needYes: { type: Boolean, default: false },
-  urgency: { type: Number, default: 3, min: 1, max: 5 },
-  appliedYes: { type: Boolean, default: false },
+  futureNeedDate: { type: Date, default: null },
+  priority: { type: Number, default: 3 }, // ← ändrat här!
+  applied: { type: Boolean, default: false },
   appliedDate: { type: Date, default: null },
-  grantedYes: { type: Boolean, default: false },
+  granted: { type: Boolean, default: false },
   grantedDate: { type: Date, default: null },
-  standardNo: { type: Boolean, default: false },
-  feedback: { type: String, default: "" },
+  fitmentStandard: { type: Boolean, default: false },
+  feedback: { type: String, default: "" }
 }, { _id: false });
 
-const formAnswerSchema = new mongoose.Schema({
-  formId: { type: mongoose.Schema.Types.ObjectId, ref: 'Form', required: true },
-  individualId: { type: mongoose.Schema.Types.ObjectId, ref: 'Individual', required: true },
-  answers: [answerSchema],
-  createdDate: { type: Date, default: Date.now },
-  lastUpdatedDate: { type: Date, default: Date.now },
-});
 
-formAnswerSchema.pre('save', function (next) {
-  this.lastUpdatedDate = new Date();
-  next();
-});
+const FormSchema = new mongoose.Schema({
+  formId: { type: String, required: true, unique: true },
+  type: { type: String, required: true },
+  individualId: { type: mongoose.Schema.Types.ObjectId, ref: "Individual", required: true },
+  answers: [AnswerSchema],
+  complete: { type: Boolean, default: false },
+  lastUpdatedDate: { type: Date, default: null }
+}, { timestamps: true });
 
-const FormAnswer = mongoose.model('FormAnswer', formAnswerSchema);
-
-export default FormAnswer;
+export const Form = mongoose.model("Form", FormSchema);
