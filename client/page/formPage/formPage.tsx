@@ -9,19 +9,17 @@ import Slider from "../../component/Slider/Slider";
 import TextArea from "../../component/textArea/textArea";
 import ButtonComp from "../../component/buttonComp/buttonComp";
 
+import { submitFormToBackend, FormAnswer } from "../../controller/formController";
 import { questions, answers, futureOptions } from "./habiliteringsQuestions";
 
-/**
- * This page renders one form question at a time from the Habilitering form.
- * All user inputs are stored locally in state.
- * 
- * In the future, responses will be sent to the backend.
- */
 export default function FormPage() {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Form state
+  // Global answer state
+  const [allAnswers, setAllAnswers] = useState<FormAnswer[]>([]);
+
+  // Local question state
   const [needNo, setNeedNo] = useState(false);
   const [futureNeed, setFutureNeed] = useState(false);
   const [futureNeedDate, setFutureNeedDate] = useState(futureOptions[0]);
@@ -37,35 +35,6 @@ export default function FormPage() {
   const [standardNo, setStandardNo] = useState(false);
   const [feedback, setFeedback] = useState("");
 
-  /**
-   * Placeholder function for saving the current form answers to the database.
-   * 
-   * TODO: In the future, connect this function to ourbackend API.
-   */
-  const saveAnswersToDB = () => {
-    const answerData = {
-      question: questions[currentIndex],
-      needNo,
-      futureNeed,
-      futureNeedDate,
-      needYes,
-      urgency,
-      appliedYes,
-      appliedDate,
-      grantedYes,
-      grantedDate,
-      standardNo,
-      feedback
-    };
-
-    console.log("Saving to DB (simulated):", answerData);
-    // TODO: POST this data to backend
-  };
-
-  /**
-   * Resets all input fields for the next question.
-   * This ensures the user starts with a clean state each time.
-   */
   const resetAnswers = () => {
     setNeedNo(false);
     setFutureNeed(false);
@@ -83,22 +52,80 @@ export default function FormPage() {
     setFeedback("");
   };
 
+  const saveCurrentAnswer = () => {
+    const answer: FormAnswer = {
+      id: currentIndex,
+      need: needYes || needNo,
+      futureNeed,
+      futureNeedDate: futureNeed ? futureNeedDate : null,
+      priority: urgency,
+      applied: appliedYes,
+      appliedDate: appliedYes ? appliedDate.toISOString() : null,
+      granted: grantedYes,
+      grantedDate: grantedYes ? grantedDate.toISOString() : null,
+      fitmentStandard: !standardNo,
+      feedback: standardNo ? feedback : ""
+    };
+
+    setAllAnswers(prev => {
+      const updated = [...prev];
+      updated[currentIndex] = answer;
+      return updated;
+    });
+  };
+
+  const submitForm = async () => {
+    try {
+      const individualId = localStorage.getItem("individualId");
+      const token = localStorage.getItem("token");
+  
+      if (!individualId || !token) {
+        alert("Missing authentication info. Please log in again.");
+        return;
+      }
+  
+      const formId = `form_${Date.now()}`;
+  
+      const payload = {
+        formId,
+        type: "habilitering",
+        individualId,
+        answers: allAnswers
+      };
+  
+      const result = await submitFormToBackend(payload);
+  
+      if (!result) {
+        console.error("No response received from backend.");
+        return;
+      }
+  
+      console.log(result.message);       // Shows "Form created"
+      console.log("Form data:", result.form);
+      alert(result.message);             // Visar popup till användaren
+  
+      navigate("/formList");
+    } catch (error: any) {
+      console.error(error);
+      alert("Error submitting form: " + error.message);
+    }
+  };
+
   const next = () => {
-    saveAnswersToDB();
+    saveCurrentAnswer();
 
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex((i) => i + 1);
-      resetAnswers(); // Clear previous inputs
+      setCurrentIndex(i => i + 1);
+      resetAnswers();
     } else {
-      console.log("All questions answered. Submitting form...");
-      navigate("/formList");
+      submitForm();
     }
   };
 
   const prev = () => {
     if (currentIndex > 0) {
-      setCurrentIndex((i) => i - 1);
-      resetAnswers(); // Optional: also reset if going back
+      setCurrentIndex(i => i - 1);
+      resetAnswers(); 
     }
   };
 
