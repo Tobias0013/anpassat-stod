@@ -38,7 +38,7 @@ export default function FormPage() {
   const resetAnswers = () => {
     setNeedNo(false);
     setFutureNeed(false);
-    setFutureNeedDate(futureOptions[0]);
+    setFutureNeedDate(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString());
 
     setNeedYes(false);
     setUrgency(3);
