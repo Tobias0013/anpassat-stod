@@ -94,4 +94,28 @@
   .form-indent {
     margin-left: 2rem;
   }
+  .form-error-message,
+.form-success-message {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  white-space: pre-line;
+  text-align: center;
+  padding: 1rem;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.form-error-message {
+  color: red;
+  background-color: #fdd;
+  font-weight: bold;
+}
+
+.form-success-message {
+  color: green;
+  background-color: #dfd;
+  font-weight: bold;
+}
+
+  
   

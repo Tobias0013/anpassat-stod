@@ -19,7 +19,6 @@ export interface SubmitFormPayload {
   answers: FormAnswer[];
 }
 
-// ✅ BACKEND URL – matchar din backend-port
 const BASE_URL = "http://localhost:3000";
 
 /**

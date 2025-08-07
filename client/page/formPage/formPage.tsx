@@ -12,6 +12,30 @@ import ButtonComp from "../../component/buttonComp/buttonComp";
 import { submitFormToBackend, FormAnswer } from "../../controller/formController";
 import { questions, answers, futureOptions } from "./habiliteringsQuestions";
 
+/**
+ * FormPage component handles a multi-step form submission flow for a habilitering form.
+ * It dynamically renders form questions, manages local and global answer states,
+ * and sends the compiled responses to the backend API on completion.
+ * 
+ * Features:
+ * - Step-by-step question navigation with conditional inputs
+ * - Local state handling for checkboxes, sliders, dates, and text areas
+ * - Final submission via `submitFormToBackend` with success/failure feedback
+ * - Displays inline success/error messages in a user-friendly format
+ * 
+ * State Managed:
+ * - `allAnswers`: Stores all answers across form steps
+ * - `currentIndex`: Tracks the current step/question
+ * - Field-specific states: like `needYes`, `urgency`, `appliedYes`, etc.
+ * 
+ * Behavior:
+ * - Users move forward using "Nästa" or "Färdig" (last step triggers submit)
+ * - On successful submission, shows "Formulär sparat!" and redirects to /dashboard
+ * - On failure, displays a meaningful error message
+ * 
+ * @returns {JSX.Element} The rendered habilitering form page
+ */
+
 export default function FormPage() {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -34,6 +58,9 @@ export default function FormPage() {
 
   const [standardNo, setStandardNo] = useState(false);
   const [feedback, setFeedback] = useState("");
+  
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   const resetAnswers = () => {
     setNeedNo(false);
@@ -75,12 +102,15 @@ export default function FormPage() {
   };
 
   const submitForm = async () => {
+    setErrorMessage("");
+    setSuccessMessage("");
+  
     try {
       const individualId = localStorage.getItem("individualId");
       const token = localStorage.getItem("token");
   
       if (!individualId || !token) {
-        alert("Missing authentication info. Please log in again.");
+        setErrorMessage("Saknar autentisering. Logga in igen.");
         return;
       }
   
@@ -90,26 +120,26 @@ export default function FormPage() {
         formId,
         type: "habilitering",
         individualId,
-        answers: allAnswers
+        answers: allAnswers,
       };
   
       const result = await submitFormToBackend(payload);
   
       if (!result) {
-        console.error("No response received from backend.");
+        setErrorMessage("Inget svar från servern.");
         return;
       }
   
-      console.log(result.message);       // Shows "Form created"
-      console.log("Form data:", result.form);
-      alert(result.message);             // Visar popup till användaren
+      setSuccessMessage("Formulär sparat!");
   
-      navigate("/formList");
+      // Navigate after short delay
+      setTimeout(() => navigate("/dashboard"), 1000);
     } catch (error: any) {
       console.error(error);
-      alert("Error submitting form: " + error.message);
+      setErrorMessage("Fel vid formulärinlämning: " + error.message);
     }
   };
+  
 
   const next = () => {
     saveCurrentAnswer();
@@ -132,6 +162,8 @@ export default function FormPage() {
   return (
     <section className="form-section">
       <div className="form-container">
+      {errorMessage && <p className="form-error-message">{errorMessage}</p>}
+      {successMessage && <p className="form-success-message">{successMessage}</p>}
         <div className="form-form">
           <h1 className="form-h1">Fråga {currentIndex + 1} av {questions.length}</h1>
           <h2 className="form-h2">{questions[currentIndex]}</h2>
