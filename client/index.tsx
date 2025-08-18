@@ -10,9 +10,6 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
 
-import Clock from "./component/clock";
-import Form from "./component/form";
-import ColorPicker from "./component/colorPicker";
 import "./index.css";
 import HomePage from "./page/home/home";
 import TestPage from "./page/test/test";
@@ -26,6 +23,7 @@ import EventOfTheDay from "./page/eventOfTheDay/eventOfTheDay";
 import CreateIndividualPage from "./page/individual/individual";
 import FormList from "./page/formList/formList";
 import FormPage from "./page/formPage/formPage";
+import ResultPage from "./page/result/result";
 
 const rootElem = document.getElementById("root");
 
@@ -60,6 +58,7 @@ root.render(
         <Route path="/eventOfTheDay" element={<EventOfTheDay />} />
         <Route path="/formList" element={<FormList />} />
         <Route path="/formPage" element={<FormPage />} />
+        <Route path="/result" element={<ResultPage />} />
       </Routes>
       <Footer />
     </BrowserRouter>
