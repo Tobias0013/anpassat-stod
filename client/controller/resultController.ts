@@ -29,7 +29,7 @@ export interface FormDto {
 const BASE_URL = "http://localhost:3000";
 
 /**
- * Hämta alla formulär för en individ (individId från localStorage i vår setup).
+ * Hämta alla formulär för en individ.
  */
 export async function fetchFormsForIndividual(individualId: string): Promise<FormDto[]> {
   const token = localStorage.getItem("token");
@@ -46,4 +46,25 @@ export async function fetchFormsForIndividual(individualId: string): Promise<For
   }
 
   return (await res.json()) as FormDto[];
+}
+
+/**
+ * VALFRITT: hämta ett specifikt formulär via formId (använder din getFormById).
+ * Endast om du vill säkerställa senaste versionen per form.
+ */
+export async function fetchFormById(formId: string): Promise<FormDto> {
+  const token = localStorage.getItem("token");
+  if (!token) throw new Error("Missing token");
+
+  const res = await fetch(`${BASE_URL}/forms/${encodeURIComponent(formId)}`, {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || "Failed to fetch form");
+  }
+
+  return (await res.json()) as FormDto;
 }

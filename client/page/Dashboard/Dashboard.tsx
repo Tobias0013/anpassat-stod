@@ -63,7 +63,6 @@ export default function Dashboard() {
               <div className="button-stack">
               <ButtonComp text="Formulär" onClick={() => { localStorage.setItem("individualId", person._id); navigate("/formList");}}/>
               <ButtonComp text="Resultat" onClick={() => { localStorage.setItem("individualId", person._id); navigate("/result"); }} />
-                <ButtonComp text="Resultat" onClick={() => console.log(`${person.name}: Resultat`)} />
                 <ButtonComp text="Att göra" onClick={() => console.log(`${person.name}: Att göra`)} />
                 <ButtonComp text="Dagens händelse" onClick={() => navigate("/eventOfTheDay")} />
               </div>
