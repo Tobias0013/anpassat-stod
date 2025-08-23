@@ -1,3 +1,12 @@
+import React from 'react';
 
-export default function TestPage() {
-}
+const TestPage: React.FC = () => {
+    return (
+        <div>
+            <h1>Test Page</h1>
+            <p>This is a placeholder for the test page.</p>
+        </div>
+    );
+};
+
+export default TestPage;

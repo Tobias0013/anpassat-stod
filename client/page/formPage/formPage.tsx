@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./formPage.css";
 
@@ -16,73 +16,55 @@ import { questions, answers, futureOptions } from "./habiliteringsQuestions";
  * FormPage component handles a multi-step form submission flow for a habilitering form.
  * It dynamically renders form questions, manages local and global answer states,
  * and sends the compiled responses to the backend API on completion.
- * 
- * Features:
- * - Step-by-step question navigation with conditional inputs
- * - Local state handling for checkboxes, sliders, dates, and text areas
- * - Final submission via `submitFormToBackend` with success/failure feedback
- * - Displays inline success/error messages in a user-friendly format
- * 
- * State Managed:
- * - `allAnswers`: Stores all answers across form steps
- * - `currentIndex`: Tracks the current step/question
- * - Field-specific states: like `needYes`, `urgency`, `appliedYes`, etc.
- * 
- * Behavior:
- * - Users move forward using "Nästa" or "Färdig" (last step triggers submit)
- * - On successful submission, shows "Formulär sparat!" and redirects to /dashboard
- * - On failure, displays a meaningful error message
- * 
- * @returns {JSX.Element} The rendered habilitering form page
- */
-
+  */
 export default function FormPage() {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Global answer state
+  // Global answers for ALL questions
   const [allAnswers, setAllAnswers] = useState<FormAnswer[]>([]);
 
-  // Local question state
+  // Local UI state for the CURRENT question
   const [needNo, setNeedNo] = useState(false);
-  const [futureNeed, setFutureNeed] = useState(false);
-  const [futureNeedDate, setFutureNeedDate] = useState(futureOptions[0]);
-
   const [needYes, setNeedYes] = useState(false);
+
+  const [futureNeed, setFutureNeed] = useState(false);
+  const [futureNeedDate, setFutureNeedDate] = useState<string | null>(futureOptions[0] ?? null);
   const [urgency, setUrgency] = useState(3);
+
   const [appliedYes, setAppliedYes] = useState(false);
   const [appliedDate, setAppliedDate] = useState<Date>(new Date());
 
   const [grantedYes, setGrantedYes] = useState(false);
   const [grantedDate, setGrantedDate] = useState<Date>(new Date());
 
-  const [standardNo, setStandardNo] = useState(false);
+  const [standardNo, setStandardNo] = useState(false); // "uppfyller inte standard"
   const [feedback, setFeedback] = useState("");
-  
+
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-  const resetAnswers = () => {
+  /** Hjälpfunktion: ladda defaults för ny fråga */
+  const loadDefaultsForQuestion = () => {
     setNeedNo(false);
-    setFutureNeed(false);
-    setFutureNeedDate(new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString());
-
     setNeedYes(false);
+    setFutureNeed(false);
+    setFutureNeedDate(futureOptions[0] ?? null);
     setUrgency(3);
     setAppliedYes(false);
     setAppliedDate(new Date());
-
-    setGrantedYes(false);
-    setGrantedDate(new Date());
-
+      setGrantedYes(false);
+      setGrantedDate(new Date());
     setStandardNo(false);
     setFeedback("");
   };
 
+  /** Spara nuvarande frågas svar in i allAnswers[currentIndex] */
   const saveCurrentAnswer = () => {
     const answer: FormAnswer = {
       id: currentIndex,
-      need: needYes || needNo,
+      // Tydlig tolkning: needYes => true, needNo => false, annars false
+      need: needYes ? true : needNo ? false : false,
       futureNeed,
       futureNeedDate: futureNeed ? futureNeedDate : null,
       priority: urgency,
@@ -90,63 +72,111 @@ export default function FormPage() {
       appliedDate: appliedYes ? appliedDate.toISOString() : null,
       granted: grantedYes,
       grantedDate: grantedYes ? grantedDate.toISOString() : null,
-      fitmentStandard: !standardNo,
-      feedback: standardNo ? feedback : ""
+      fitmentStandard: !standardNo, // true = uppfyller standard
+      feedback: standardNo ? feedback : "",
     };
 
-    setAllAnswers(prev => {
+    setAllAnswers((prev) => {
       const updated = [...prev];
       updated[currentIndex] = answer;
       return updated;
     });
   };
 
+  /** När currentIndex ändras: ladda tillbaka ev. sparade svar, annars defaults */
+  useEffect(() => {
+    const a = allAnswers[currentIndex];
+    if (!a) {
+      loadDefaultsForQuestion();
+      return;
+    }
+
+    // Återställ UI från sparat svar
+    setNeedYes(a.need === true);
+    setNeedNo(a.need === false);
+    setFutureNeed(Boolean(a.futureNeed));
+    setFutureNeedDate(a.futureNeedDate ?? (futureOptions[0] ?? null));
+    setUrgency(typeof a.priority === "number" ? a.priority : 3);
+    setAppliedYes(Boolean(a.applied));
+    setAppliedDate(a.appliedDate ? new Date(a.appliedDate) : new Date());
+    setGrantedYes(Boolean(a.granted));
+    setGrantedDate(a.grantedDate ? new Date(a.grantedDate) : new Date());
+    setStandardNo(!a.fitmentStandard);
+    setFeedback(a.feedback || "");
+  }, [currentIndex]);
+
+  /** Initiera vid mount */
+  useEffect(() => {
+    // Starta med tomma svar och nollställt UI
+    setAllAnswers([]);
+    loadDefaultsForQuestion();
+  }, []);
+
+  /** Submit hela formuläret */
   const submitForm = async () => {
     setErrorMessage("");
     setSuccessMessage("");
-  
+
     try {
       const individualId = localStorage.getItem("individualId");
       const token = localStorage.getItem("token");
-  
+
       if (!individualId || !token) {
         setErrorMessage("Saknar autentisering. Logga in igen.");
         return;
       }
-  
+
+      // Spara säkert även sista stegets svar
+      saveCurrentAnswer();
+
       const formId = `form_${Date.now()}`;
-  
+
       const payload = {
         formId,
         type: "habilitering",
         individualId,
-        answers: allAnswers,
+        // deep copy för att undvika referensstrul
+        answers: JSON.parse(JSON.stringify(allAnswers)),
       };
-  
+
+      // Inkludera även det absolut senaste svaret om setState ännu inte hunnit flushas
+      if (!payload.answers[currentIndex]) {
+        const last: FormAnswer = {
+          id: currentIndex,
+          need: needYes ? true : needNo ? false : false,
+          futureNeed,
+          futureNeedDate: futureNeed ? futureNeedDate : null,
+          priority: urgency,
+          applied: appliedYes,
+          appliedDate: appliedYes ? appliedDate.toISOString() : null,
+          granted: grantedYes,
+          grantedDate: grantedYes ? grantedDate.toISOString() : null,
+          fitmentStandard: !standardNo,
+          feedback: standardNo ? feedback : "",
+        };
+        payload.answers[currentIndex] = last;
+      }
       const result = await submitFormToBackend(payload);
-  
+
       if (!result) {
         setErrorMessage("Inget svar från servern.");
         return;
       }
-  
-      setSuccessMessage("Formulär sparat!");
-  
-      // Navigate after short delay
-      setTimeout(() => navigate("/dashboard"), 1000);
+
+    setSuccessMessage("Formulär sparat!");
+    setTimeout(() => navigate("/dashboard"), 1000);
     } catch (error: any) {
       console.error(error);
       setErrorMessage("Fel vid formulärinlämning: " + error.message);
     }
   };
-  
 
+  /** Steg framåt/bakåt */
   const next = () => {
     saveCurrentAnswer();
 
     if (currentIndex < questions.length - 1) {
-      setCurrentIndex(i => i + 1);
-      resetAnswers();
+      setCurrentIndex((i) => i + 1);
     } else {
       submitForm();
     }
@@ -154,28 +184,34 @@ export default function FormPage() {
 
   const prev = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(i => i - 1);
-      resetAnswers(); 
+      saveCurrentAnswer();
+      setCurrentIndex((i) => i - 1);
     }
   };
 
   return (
     <section className="form-section">
       <div className="form-container">
-      {errorMessage && <p className="form-error-message">{errorMessage}</p>}
-      {successMessage && <p className="form-success-message">{successMessage}</p>}
+        {errorMessage && <p className="form-error-message">{errorMessage}</p>}
+        {successMessage && <p className="form-success-message">{successMessage}</p>}
         <div className="form-form">
           <h1 className="form-h1">Fråga {currentIndex + 1} av {questions.length}</h1>
           <h2 className="form-h2">{questions[currentIndex]}</h2>
 
+          {/* INGET BEHOV */}
           <div className="form-checkbox-container">
             <CheckBox
               label={answers[0]}
               checked={needNo}
-              onChange={() => setNeedNo(!needNo)}
+              onChange={() => {
+                const next = !needNo;
+                setNeedNo(next);
+                if (next) setNeedYes(false); // ömsesidigt
+              }}
             />
           </div>
 
+          {/* Framtida behov only if "inget behov" */}
           {needNo && (
             <div className="form-indent">
               <CheckBox
@@ -187,17 +223,22 @@ export default function FormPage() {
                 <ComboBox
                   text={answers[2]}
                   options={futureOptions}
-                  value={futureNeedDate}
+                  value={futureNeedDate ?? undefined}
                   onChange={setFutureNeedDate}
                 />
               )}
             </div>
           )}
 
+          {/* BEHOV (ja) */}
           <CheckBox
             label={answers[3]}
             checked={needYes}
-            onChange={() => setNeedYes(!needYes)}
+            onChange={() => {
+              const next = !needYes;
+              setNeedYes(next);
+              if (next) setNeedNo(false); 
+            }}
           />
 
           {needYes && (
@@ -208,6 +249,7 @@ export default function FormPage() {
                 onChange={(e) => setUrgency(Number(e.target.value))}
               />
 
+              {/* Ansökt? två vägar (ömsesidigt via explicit true/false) */}
               <CheckBox
                 label={answers[4]}
                 checked={!appliedYes}
@@ -254,8 +296,9 @@ export default function FormPage() {
 
           {grantedYes && grantedDate && (
             <>
+              {/* Uppfyller standard? */}
               <CheckBox
-                label={answers[8]}
+                label={answers[8]} // "Uppfyller inte standard"
                 checked={standardNo}
                 onChange={() => setStandardNo(!standardNo)}
               />
@@ -267,7 +310,7 @@ export default function FormPage() {
                 />
               )}
               <CheckBox
-                label={answers[10]}
+                label={answers[10]} // "Uppfyller standard"
                 checked={!standardNo}
                 onChange={() => setStandardNo(false)}
               />
