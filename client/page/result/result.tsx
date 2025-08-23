@@ -3,24 +3,34 @@ import { useNavigate } from "react-router-dom";
 
 import ButtonComp from "../../component/buttonComp/buttonComp";
 import { fetchFormsForIndividual, FormDto, FormAnswer } from "../../controller/resultController";
+import { questions } from "../formPage/habiliteringsQuestions";
 
-// ⚠️ Justera import-sökvägen så den pekar på din fil
-// I din form-sida importerar du from "./habiliteringsQuestions"
-// Från den här platsen kan det bli t.ex.:
-import { questions } from "../formPage/habiliteringsQuestions"; // <-- ändra vid behov
+import "./resultPage.css";
 
-function fmtDate(d?: string | null) {
-  if (!d) return "—";
-  const t = Date.parse(d);
-  return isNaN(t) ? "—" : new Date(t).toLocaleDateString("sv-SE");
-}
-function yesNo(v?: boolean) {
-  return v ? "Ja" : "Nej";
-}
-
+/**
+ * Result component displays all forms for the currently selected individual.
+ * It retrieves the individual ID and name from localStorage and fetches
+ * associated forms from the backend. Each form is rendered inline with
+ * its answers mapped to the corresponding questions.
+ *
+ * The page includes loading, error, and empty states for a smooth user experience.
+ * Form metadata such as last updated date is displayed, while form IDs are hidden
+ * for now (commented out for future use).
+ *
+ * @example
+ * return (
+ *   <Result />
+ * )
+ *
+ * @returns {JSX.Element} The rendered result page component.
+ *
+ * @throws {Error} Displays an error message if fetching forms fails.
+ */
 export default function Result() {
   const navigate = useNavigate();
+
   const [individualId] = useState<string | null>(() => localStorage.getItem("individualId"));
+  const [individualName] = useState<string | null>(() => localStorage.getItem("individualName"));
 
   const [forms, setForms] = useState<FormDto[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
@@ -38,7 +48,6 @@ export default function Result() {
       try {
         const data = await fetchFormsForIndividual(individualId);
 
-        // Senast uppdaterad överst
         data.sort((a, b) => {
           const aDate = Date.parse(a.lastUpdatedDate || a.updatedAt || a.createdAt || "") || 0;
           const bDate = Date.parse(b.lastUpdatedDate || b.updatedAt || b.createdAt || "") || 0;
@@ -57,51 +66,60 @@ export default function Result() {
     load();
   }, [individualId]);
 
+  function fmtDate(d?: string | null) {
+    if (!d) return "—";
+    const t = Date.parse(d);
+    return isNaN(t) ? "—" : new Date(t).toLocaleDateString("sv-SE");
+  }
+
+  function yesNo(v?: boolean) {
+    return v ? "Ja" : "Nej";
+  }
+
   const total = forms.length;
 
   const content = useMemo(() => {
     if (!individualId) {
       return (
         <div>
-          <p style={{ color: "red" }}>Saknar individ. Välj en individ från översikten.</p>
-          <ButtonComp text="Till dashboard" onClick={() => navigate("/dashboard")} />
+          <p className="form-error-message">Saknar individ. Välj en individ från översikten.</p>
+          <div className="form-btn-container">
+            <ButtonComp className="form-btn" text="Till dashboard" onClick={() => navigate("/dashboard")} />
+          </div>
         </div>
       );
     }
     if (loading) return <p>Laddar formulär...</p>;
-    if (errorMessage) return <p style={{ color: "red" }}>{errorMessage}</p>;
-    if (total === 0) return <p>Inga formulär hittades för denna individ.</p>;
+    if (errorMessage) return <p className="form-error-message">{errorMessage}</p>;
+    if (total === 0) return <p className="form-h2">Inga formulär hittades för denna individ.</p>;
 
     return (
-      <ul style={{ listStyle: "none", padding: 0 }}>
+      <ul className="result-list">
         {forms.map((f) => {
           const updated = f.lastUpdatedDate || f.updatedAt || f.createdAt || null;
           const answers = Array.isArray(f.answers) ? f.answers : [];
 
           return (
-            <li
-              key={f._id}
-              style={{
-                border: "1px solid #ccc",
-                borderRadius: 8,
-                padding: 12,
-                marginBottom: 16,
-              }}
-            >
-              <header style={{ marginBottom: 8 }}>
-                <h2 style={{ margin: 0 }}>{f.type || "Formulär"}</h2>
-                <div style={{ fontSize: 14, color: "#555", marginTop: 4 }}>
-                  <span>Form ID: <code>{f.formId}</code></span>
-                  <span> &nbsp;•&nbsp; Status: <strong>{f.complete ? "Färdig" : "Pågående"}</strong></span>
-                  <span> &nbsp;•&nbsp; Uppdaterad: {updated ? new Date(updated).toLocaleString("sv-SE") : "—"}</span>
+            <li key={f._id} className="result-card">
+              <header className="result-card-header">
+                <div className="result-title-row">
+                  <h3 className="result-form-type">
+                    {f.type ? f.type.charAt(0).toUpperCase() + f.type.slice(1) : "Formulär"}
+                  </h3>
+                  <div className="result-meta">
+                    {/* <span>Form ID: <code>{f.formId}</code></span> */}
+                    <span>Uppdaterad: {updated ? new Date(updated).toLocaleString("sv-SE") : "—"}</span>
+                    {/* Status används inte just nu, implementera i framtid?
+                    <span>Status: <strong>{f.complete ? "Färdig" : "Pågående"}</strong></span>
+                    */}
+                  </div>
                 </div>
               </header>
 
-              {/* Lista varje fråga + svar */}
               {answers.length === 0 ? (
-                <p style={{ marginTop: 8 }}>Inga svar inskickade.</p>
+                <p className="result-empty">Inga svar inskickade.</p>
               ) : (
-                <ol style={{ paddingLeft: 18, margin: 0 }}>
+                <ol className="answer-list">
                   {answers.map((a: FormAnswer, idx: number) => {
                     const qText =
                       Array.isArray(questions) && questions[idx]
@@ -109,36 +127,32 @@ export default function Result() {
                         : `Fråga ${idx + 1}`;
 
                     return (
-                      <li key={idx} style={{ marginBottom: 12 }}>
-                        <div style={{ fontWeight: 600, marginBottom: 4 }}>
-                          {qText}
-                        </div>
+                      <li key={idx} className="answer-item">
+                        <div className="answer-question">{qText}</div>
 
-                        <div style={{ fontSize: 14, lineHeight: 1.6 }}>
-                          <div><strong>Behov:</strong> {yesNo(a.need)}</div>
-
-                          <div><strong>Framtida behov:</strong> {yesNo(a.futureNeed)}</div>
+                        <div className="answer-grid">
+                          <div><span className="answer-label">Behov:</span> {yesNo(a.need)}</div>
+                          <div><span className="answer-label">Framtida behov:</span> {yesNo(a.futureNeed)}</div>
                           {a.futureNeed && (
-                            <div><strong>Framtida datum:</strong> {fmtDate(a.futureNeedDate)}</div>
+                            <div><span className="answer-label">Framtida datum:</span> {fmtDate(a.futureNeedDate)}</div>
                           )}
 
                           {a.need && (
                             <>
-                              <div><strong>Prioritet:</strong> {a.priority ?? "—"}</div>
-
-                              <div><strong>Ansökt:</strong> {yesNo(a.applied)}</div>
+                              <div><span className="answer-label">Prioritet:</span> {a.priority ?? "—"}</div>
+                              <div><span className="answer-label">Ansökt:</span> {yesNo(a.applied)}</div>
                               {a.applied && (
-                                <div><strong>Ansökt datum:</strong> {fmtDate(a.appliedDate)}</div>
+                                <div><span className="answer-label">Ansökt datum:</span> {fmtDate(a.appliedDate)}</div>
                               )}
-
-                              <div><strong>Beviljad:</strong> {yesNo(a.granted)}</div>
+                              <div><span className="answer-label">Beviljad:</span> {yesNo(a.granted)}</div>
                               {a.granted && (
-                                <div><strong>Beviljad datum:</strong> {fmtDate(a.grantedDate)}</div>
+                                <div><span className="answer-label">Beviljad datum:</span> {fmtDate(a.grantedDate)}</div>
                               )}
-
-                              <div><strong>Uppfyller standard:</strong> {yesNo(a.fitmentStandard)}</div>
+                              <div><span className="answer-label">Uppfyller standard:</span> {yesNo(a.fitmentStandard)}</div>
                               {!a.fitmentStandard && (
-                                <div><strong>Feedback:</strong> {a.feedback || "—"}</div>
+                                <div className="answer-feedback">
+                                  <span className="answer-label">Feedback:</span> {a.feedback || "—"}
+                                </div>
                               )}
                             </>
                           )}
@@ -156,15 +170,21 @@ export default function Result() {
   }, [individualId, loading, errorMessage, total, forms, navigate]);
 
   return (
-    <main style={{ padding: 16 }}>
-      <h1>Resultat</h1>
-      {individualId && (
-        <div style={{ marginBottom: 12, color: "#555" }}>
-          Individ: <code>{individualId}</code>
-          {total > 0 && <span> • {total} formulär</span>}
+    <section className="form-section">
+      <div className="form-container">
+        <div className="form-form">
+          <h1 className="form-h1">Resultat</h1>
+
+          <div className="result-header">
+            <span className="result-header-name">
+              Individ: <strong>{individualName || individualId}</strong>
+            </span>
+            {total > 0 && <span className="result-header-count">{total} formulär</span>}
+          </div>
+
+          {content}
         </div>
-      )}
-      {content}
-    </main>
+      </div>
+    </section>
   );
 }

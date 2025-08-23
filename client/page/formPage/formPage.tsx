@@ -103,7 +103,6 @@ export default function FormPage() {
     setGrantedDate(a.grantedDate ? new Date(a.grantedDate) : new Date());
     setStandardNo(!a.fitmentStandard);
     setFeedback(a.feedback || "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentIndex]);
 
   /** Initiera vid mount */
@@ -111,7 +110,6 @@ export default function FormPage() {
     // Starta med tomma svar och nollställt UI
     setAllAnswers([]);
     loadDefaultsForQuestion();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /** Submit hela formuläret */
@@ -158,10 +156,6 @@ export default function FormPage() {
         };
         payload.answers[currentIndex] = last;
       }
-
-      // DEBUG (valfritt): se exakt vad som skickas
-      // console.log("[FORM SUBMIT DEBUG] payload", JSON.stringify(payload, null, 2));
-
       const result = await submitFormToBackend(payload);
 
       if (!result) {
@@ -243,7 +237,7 @@ export default function FormPage() {
             onChange={() => {
               const next = !needYes;
               setNeedYes(next);
-              if (next) setNeedNo(false); // ömsesidigt
+              if (next) setNeedNo(false); 
             }}
           />
 
@@ -318,7 +312,7 @@ export default function FormPage() {
               <CheckBox
                 label={answers[10]} // "Uppfyller standard"
                 checked={!standardNo}
-                onChange={() => setStandardNo(false)} // ömsesidigt
+                onChange={() => setStandardNo(false)}
               />
             </>
           )}
