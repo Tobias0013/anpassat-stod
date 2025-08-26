@@ -7,18 +7,9 @@ import {
   EventDto,
 } from "../../controller/eventController";
 import "./eventOfTheDay.css";
+import jsPDF from "jspdf";
+import "jspdf-autotable";
 
-/**
- * EventOfTheDay renders a note field for “Dagens händelse” and a scrollable
- * history list (newest first) for the currently selected individual.
- *
- * Layout details:
- * - Uses a wrapper .event-inner so the footer/history area can flex and scroll.
- * - The “Spara” button keeps its position; history scrolls inside the box.
- *
- * Category:
- * - UI label “Färdtjänst” maps to backend enum "TRANSPORT".
- */
 const EventOfTheDay: React.FC = () => {
   const [text, setText] = useState("");
   const [events, setEvents] = useState<EventDto[]>([]);
@@ -107,6 +98,48 @@ const EventOfTheDay: React.FC = () => {
     return cat ?? "—";
   };
 
+  // --- PDF helper: download a single event as PDF ---
+  const downloadEventPDF = (ev: EventDto) => {
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+
+    const title = "Dagens händelse";
+    const dateStr = fmtDateTime(ev.updatedAt || ev.eventDate);
+    const categoryStr = renderCategoryLabel(ev.category);
+    const individStr = individualName || individualId || "—";
+    const left = 48;
+    let y = 64;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text(title, left, y);
+    y += 24;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.text(`Individ: ${individStr}`, left, y);
+    y += 18;
+    doc.text(`Datum: ${dateStr}`, left, y);
+    y += 18;
+    doc.text(`Kategori: ${categoryStr}`, left, y);
+    y += 28;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.text("Meddelande", left, y);
+    y += 16;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+
+    const maxWidth = doc.internal.pageSize.getWidth() - left * 2;
+    const lines = doc.splitTextToSize(ev.message || "", maxWidth);
+    doc.text(lines, left, y);
+
+    const safeName = (individStr || "individ").toString().replace(/[^\w\-]+/g, "_");
+    const safeDate = (ev.updatedAt || ev.eventDate || "").toString().replace(/[: ]+/g, "_");
+    doc.save(`händelse_${safeName}_${safeDate || "datum"}.pdf`);
+  };
+
   return (
     <div className="event-section">
       <div className="event-container">
@@ -171,6 +204,13 @@ const EventOfTheDay: React.FC = () => {
                           {renderCategoryLabel(ev.category)}
                         </span>
                       )}
+                      <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+                        <ButtonComp
+                          className="pdf-btn"
+                          text="Spara som PDF"
+                          onClick={() => downloadEventPDF(ev)}
+                        />
+                      </div>
                     </div>
                     <div className="event-item-msg">{ev.message}</div>
                   </li>
@@ -185,3 +225,4 @@ const EventOfTheDay: React.FC = () => {
 };
 
 export default EventOfTheDay;
+
