@@ -1,4 +1,3 @@
-// src/pages/eventOfTheDay/eventOfTheDay.tsx
 import React, { useCallback, useEffect, useState } from "react";
 import TextArea from "../../component/textArea/textArea";
 import ButtonComp from "../../component/buttonComp/buttonComp";
@@ -152,12 +151,6 @@ const EventOfTheDay: React.FC = () => {
             <div className="event-history-header">
               <h2>Historik</h2>
               <span className="event-history-count">({events.length})</span>
-              <div className="event-history-actions">
-                <ButtonComp
-                  text={fetching ? "Uppdaterar..." : "Uppdatera"}
-                  onClick={loadHistory}
-                />
-              </div>
             </div>
 
             {fetching && <p className="event-history-loading">Laddar...</p>}
