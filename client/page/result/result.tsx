@@ -72,6 +72,14 @@ export default function Result() {
     return isNaN(t) ? "—" : new Date(t).toLocaleDateString("sv-SE");
   }
 
+  // NEW: shows label if not a parseable date (e.g. "1 månad")
+  function fmtDateOrLabel(d?: string | null) {
+    if (!d) return "—";
+    const t = Date.parse(d);
+    if (!isNaN(t)) return new Date(t).toLocaleDateString("sv-SE");
+    return d; // fallback to the stored label
+  }
+
   function yesNo(v?: boolean) {
     return v ? "Ja" : "Nej";
   }
@@ -134,7 +142,7 @@ export default function Result() {
                           <div><span className="answer-label">Behov:</span> {yesNo(a.need)}</div>
                           <div><span className="answer-label">Framtida behov:</span> {yesNo(a.futureNeed)}</div>
                           {a.futureNeed && (
-                            <div><span className="answer-label">Framtida datum:</span> {fmtDate(a.futureNeedDate)}</div>
+                            <div><span className="answer-label">Framtida datum:</span> {fmtDateOrLabel(a.futureNeedDate)}</div>
                           )}
 
                           {a.need && (

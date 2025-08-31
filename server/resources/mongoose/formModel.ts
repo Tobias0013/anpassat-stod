@@ -4,8 +4,8 @@ const AnswerSchema = new mongoose.Schema({
   id: { type: Number, required: true },
   need: { type: Boolean, default: false },
   futureNeed: { type: Boolean, default: false },
-  futureNeedDate: { type: Date, default: null },
-  priority: { type: Number, default: 3 }, // ← ändrat här!
+  futureNeedDate: { type: String, default: null },
+  priority: { type: Number, default: 3 },
   applied: { type: Boolean, default: false },
   appliedDate: { type: Date, default: null },
   granted: { type: Boolean, default: false },
