@@ -1,10 +1,24 @@
-const BASE_URL = `http://localhost:${process.env.PORT || 3000}`;
+/**
+ * Base URL for API calls.
+ *
+ * Resolution order:
+ * 1. Vite environment variable (VITE_API_URL)
+ * 2. Create React App environment variable (REACT_APP_API_URL)
+ * 3. Fallback to current host with port 3000 (useful for local development)
+ */
+const BASE_URL =
+  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_URL) ||
+  (typeof process !== "undefined" && (process as any).env?.REACT_APP_API_URL) ||
+  `${window.location.protocol}//${window.location.hostname}:3000`;
 
 /**
  * Fetches individuals associated with the currently logged-in account.
  *
- * @returns {Promise<any[]>} An array of individual objects.
- * @throws {Error} If the request fails or the token is missing/invalid.
+ * Reads the JWT from localStorage, decodes the account ID,
+ * and performs an authenticated request to the backend.
+ *
+ * @returns {Promise<any[]>} A promise resolving to an array of individual objects.
+ * @throws {Error} If no token is found, the token is invalid, or the request fails.
  */
 export async function fetchAccountIndividuals(): Promise<any[]> {
   const token = localStorage.getItem("token");
@@ -15,13 +29,8 @@ export async function fetchAccountIndividuals(): Promise<any[]> {
 
   const payload = JSON.parse(atob(token.split(".")[1]));
   const accountId = payload.id;
-  console.log("Token payload:", payload);             // 🟢 Kontrollera innehåll i token
-  console.log("Account ID from token:", accountId);
-  console.log("Token:", token);
-  console.log("Decoded ID:", accountId);
-  console.log("Calling URL:", `${BASE_URL}/accounts/${accountId}/individuals`);
 
-  
+  console.log("Calling URL:", `${BASE_URL}/accounts/${accountId}/individuals`);
 
   const response = await fetch(`${BASE_URL}/accounts/${accountId}/individuals`, {
     method: "GET",
@@ -31,8 +40,14 @@ export async function fetchAccountIndividuals(): Promise<any[]> {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || "Failed to fetch individuals");
+    let message = "Failed to fetch individuals";
+    try {
+      const error = await response.json();
+      if (error?.message) message = error.message;
+    } catch {
+      // Ignore parsing error, keep default message
+    }
+    throw new Error(message);
   }
 
   const data = await response.json();
