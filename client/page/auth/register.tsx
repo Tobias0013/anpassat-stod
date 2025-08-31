@@ -41,18 +41,11 @@ export default function RegisterPage() {
 
     try {
       setLoading(true);
-
-      // 1) Register the user
       await registerUser(email, password);
-
-      // 2) Immediately log them in with the same credentials
       const loginRes = await loginUser(email, password);
-
-      // 3) loginUser already stores token; if we have a token, go to dashboard
       if (loginRes?.token) {
         navigate("/dashboard");
       } else {
-        // Fallback: if no token came back for some reason, send them to login
         navigate("/login");
       }
     } catch (err: any) {
