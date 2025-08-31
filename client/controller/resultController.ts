@@ -1,5 +1,3 @@
-// client/controller/resultController.ts
-
 export interface FormAnswer {
   id: number;
   need: boolean;
@@ -48,10 +46,6 @@ export async function fetchFormsForIndividual(individualId: string): Promise<For
   return (await res.json()) as FormDto[];
 }
 
-/**
- * VALFRITT: hämta ett specifikt formulär via formId (använder din getFormById).
- * Endast om du vill säkerställa senaste versionen per form.
- */
 export async function fetchFormById(formId: string): Promise<FormDto> {
   const token = localStorage.getItem("token");
   if (!token) throw new Error("Missing token");

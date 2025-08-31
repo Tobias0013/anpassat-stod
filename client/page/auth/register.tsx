@@ -9,25 +9,7 @@ import {
 } from "../../controller/passwordChecker";
 import TextInput from "./../../component/textInput/textInput";
 import ButtonComp from "./../../component/buttonComp/buttonComp";
-import { registerUser } from "../../controller/authcontroller";
-
-
-/**
- * RegisterPage component allows users to register by providing an email and password.
- * It includes client-side form validation, password strength evaluation, and integrates
- * encrypted registration via the backend.
- *
- * On successful registration, the user is redirected to the dashboard.
- *
- * @example
- * return (
- *   <RegisterPage />
- * )
- *
- * @returns {JSX.Element} The rendered component.
- *
- * @throws {Error} If registration fails, an error message is displayed.
- */
+import { registerUser, loginUser } from "../../controller/authcontroller";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -37,8 +19,10 @@ export default function RegisterPage() {
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [strengthText, setStrengthText] = useState<string>("");
   const [strengthColor, setStrengthColor] = useState<string>("");
+  const [loading, setLoading] = useState(false);
 
   const onFormSubmit = async () => {
+    if (loading) return;
     setErrorMessage("");
 
     if (email === "" || password === "") {
@@ -54,13 +38,27 @@ export default function RegisterPage() {
       setErrorMessage("Lösenordet är för svagt");
       return;
     }
-    //Register logic
+
     try {
-      const result = await registerUser(email, password);
-      console.log("Register success:", result);
-      navigate("/login");
+      setLoading(true);
+
+      // 1) Register the user
+      await registerUser(email, password);
+
+      // 2) Immediately log them in with the same credentials
+      const loginRes = await loginUser(email, password);
+
+      // 3) loginUser already stores token; if we have a token, go to dashboard
+      if (loginRes?.token) {
+        navigate("/dashboard");
+      } else {
+        // Fallback: if no token came back for some reason, send them to login
+        navigate("/login");
+      }
     } catch (err: any) {
-      setErrorMessage(err.message);
+      setErrorMessage(err?.message || "Registrering misslyckades");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,18 +66,10 @@ export default function RegisterPage() {
     setPassword(value);
     const strength = getPasswordStrength(value);
     setStrengthText(`Password strength: ${strength.value}`);
-    if (strength.id == 0) {
-      setStrengthColor("#DC143C");
-    }
-    if (strength.id == 1) {
-      setStrengthColor("#FF8C00");
-    }
-    if (strength.id == 2) {
-      setStrengthColor("#FFFF00");
-    }
-    if (strength.id == 3) {
-      setStrengthColor("#008000");
-    }
+    if (strength.id === 0) setStrengthColor("#DC143C");
+    if (strength.id === 1) setStrengthColor("#FF8C00");
+    if (strength.id === 2) setStrengthColor("#FFFF00");
+    if (strength.id === 3) setStrengthColor("#008000");
   };
 
   return (
@@ -120,16 +110,14 @@ export default function RegisterPage() {
           <div className="auth-btn-container">
             <ButtonComp
               className="auth-btn alt"
-              onClick={() => {
-                navigate("/login");
-              }}
+              onClick={() => navigate("/login")}
               text="Logga in"
             />
 
             <ButtonComp
               className="auth-btn"
               onClick={onFormSubmit}
-              text="Registrera"
+              text={loading ? "Registrerar..." : "Registrera"}
             />
           </div>
         </div>
