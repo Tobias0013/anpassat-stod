@@ -24,6 +24,8 @@ import CreateIndividualPage from "./page/individual/individual";
 import FormList from "./page/formList/formList";
 import FormPage from "./page/formPage/formPage";
 import ResultPage from "./page/result/result";
+import Contact from "./page/contact/contact";
+import About from "./page/about/about";
 
 const rootElem = document.getElementById("root");
 
@@ -59,6 +61,8 @@ root.render(
         <Route path="/formList" element={<FormList />} />
         <Route path="/formPage" element={<FormPage />} />
         <Route path="/result" element={<ResultPage />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
       </Routes>
       <Footer />
     </BrowserRouter>
