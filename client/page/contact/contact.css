@@ -1,0 +1,42 @@
+.contact-h1 {
+    margin: 0;
+    display: block;
+    font-size: 4rem;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    font-weight: bold;
+  }
+.contact-h2 {
+    margin: 0;
+    display: block;
+    font-size: 3rem;
+    margin-top: 2rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    font-weight: bold;
+}
+
+.contact-p {
+    margin: 0;
+    display: block;
+    font-size: 2rem;
+    margin-top: .2rem;
+    margin-bottom: 1rem;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    font-weight: normal;
+}
+.contact-section {
+    display: flex;
+    justify-content: center;
+    margin-top: 15rem;
+    height: 80vh;
+    width: 50vw;
+    background: var(--background-color);
+  }
+.contact-wrapper {
+    display: flex;
+    justify-content: center;
+}
