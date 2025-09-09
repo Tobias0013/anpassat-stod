@@ -2,7 +2,7 @@ import { readFileSync } from 'fs';
 import { join } from 'path';
 import * as crypto from "crypto";
 
-const privateKeyPath = join(__dirname, "..", "..", "keys", "private.pem");
+const privateKeyPath = join(__dirname, "..", "..", "..", "dist-server", "keys", "private.pem");
 const privateKey = readFileSync(privateKeyPath, "utf-8");
 
 /**
