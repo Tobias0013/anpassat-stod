@@ -8,7 +8,7 @@ import { join } from 'path';
  * @remarks
  * This path is relative to the current file's directory.
  */
-const keyDir = join(__dirname, '../../keys');
+const keyDir = join(__dirname, '../../../dist-server/keys');
 if (!existsSync(keyDir)) {
   mkdirSync(keyDir);
 }
