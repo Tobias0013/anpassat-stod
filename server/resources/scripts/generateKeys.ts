@@ -36,4 +36,5 @@ writeFileSync(join(keyDir, 'public.pem'), publicKey);
 writeFileSync(join(keyDir, 'private.pem'), privateKey);
 
 console.log("Keys generated and saved to keys directory");
+console.log(keyDir)
 
