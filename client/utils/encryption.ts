@@ -2,90 +2,75 @@ import forge from "node-forge";
 import { API_BASE_URL } from "../utils/config";
 
 /**
- * Cached RSA public key to avoid fetching/parsing multiple times.
+ * Cachead publik RSA-nyckel.
  */
 let cachedKey: forge.pki.rsa.PublicKey | null = null;
 
-/**
- * Endpoint URL for retrieving the server's RSA public key.
- */
 const KEY_URL = `${API_BASE_URL}/public-key`;
 
 /**
- * Normalizes a public key string into a valid PEM format.
- *
- * - If the string already contains proper PEM with newlines → returned as-is.
- * - If it contains header/footer but no newlines → rewraps the body at 64-char lines.
- * - If it is only base64 (no header/footer) → wraps it into a PEM.
- * - Otherwise returns the original string (forge will throw if invalid).
- *
- * @param {string} pemLike - Raw key string from the backend.
- * @returns {string} Normalized PEM string ready for forge import.
+ * Normaliserar PEM (hanterar både PKCS#8 "BEGIN PUBLIC KEY" och PKCS#1 "BEGIN RSA PUBLIC KEY").
  */
 function normalizePem(pemLike: string): string {
-  const header = "-----BEGIN PUBLIC KEY-----";
-  const footer = "-----END PUBLIC KEY-----";
-
+  const header1 = "-----BEGIN PUBLIC KEY-----";
+  const footer1 = "-----END PUBLIC KEY-----";
+  const header2 = "-----BEGIN RSA PUBLIC KEY-----";
+  const footer2 = "-----END RSA PUBLIC KEY-----";
   let s = (pemLike || "").trim().replace(/\r/g, "");
+  const has1 = s.includes(header1) && s.includes(footer1);
+  const has2 = s.includes(header2) && s.includes(footer2);
 
-  // Case 1: Already has newlines and looks like a PEM
-  if (s.includes("\n") && s.includes(header) && s.includes(footer)) {
-    return s;
-  }
-
-  // Case 2: Has header/footer but no newlines → rewrap body
-  if (s.includes(header) && s.includes(footer)) {
-    const body = s.replace(header, "").replace(footer, "").replace(/[\s\n\r-]+/g, "");
+  if (has1 || has2) {
+    const body = s
+      .replace(header1, "")
+      .replace(footer1, "")
+      .replace(header2, "")
+      .replace(footer2, "")
+      .replace(/[\s\n\r-]+/g, "");
     const chunks = body.match(/.{1,64}/g) || [];
-    return `${header}\n${chunks.join("\n")}\n${footer}`;
+    const h = has2 ? header2 : header1;
+    const f = has2 ? footer2 : footer1;
+    return `${h}\n${chunks.join("\n")}\n${f}`;
   }
-
-  // Case 3: Pure base64 string → wrap into PEM
   if (/^[A-Za-z0-9+/=]+$/.test(s)) {
     const chunks = s.match(/.{1,64}/g) || [];
-    return `${header}\n${chunks.join("\n")}\n${footer}`;
+    return `${header1}\n${chunks.join("\n")}\n${footer1}`;
   }
-
-  // Case 4: Unknown format → return as-is (forge will error)
   return s;
 }
 
 /**
- * Fetches and caches the RSA public key from the backend.
- *
- * @async
- * @returns {Promise<forge.pki.rsa.PublicKey>} The parsed public key object.
- * @throws {Error} If the fetch fails or the key is invalid.
+ * Hämtar och cachar publik nyckel (cache-bust för att undvika gamla nycklar).
  */
-async function getCachedPublicKey(): Promise<forge.pki.rsa.PublicKey> {
-  if (cachedKey) return cachedKey;
-
-  const res = await fetch(KEY_URL);
+async function fetchPublicKeyFresh(): Promise<forge.pki.rsa.PublicKey> {
+  const res = await fetch(`${KEY_URL}?t=${Date.now()}`, { cache: "no-store" as RequestCache });
   if (!res.ok) {
-    const msg = await res.text().catch(() => "");
-    throw new Error(`Failed to fetch public key: ${res.status} ${msg}`);
+    const text = await res.text().catch(() => "");
+    throw new Error(`Failed to fetch public key: ${res.status} ${text.slice(0, 300)}`);
   }
-
   const { publicKey } = await res.json();
   const pem = normalizePem(publicKey);
+  return forge.pki.publicKeyFromPem(pem) as forge.pki.rsa.PublicKey;
+}
 
-  console.log("Normalized PEM from server:", pem);
-
-  cachedKey = forge.pki.publicKeyFromPem(pem) as forge.pki.rsa.PublicKey;
+/**
+ * Returnerar cachead nyckel, eller hämtar ny.
+ */
+export async function getCachedPublicKey(): Promise<forge.pki.rsa.PublicKey> {
+  if (cachedKey) return cachedKey;
+  cachedKey = await fetchPublicKeyFresh();
   return cachedKey;
 }
 
 /**
- * Encrypts a plaintext string with the server's RSA public key.
- *
- * - Retrieves and caches the public key on first use.
- * - Uses RSAES-PKCS1-V1_5 padding.
- * - Returns the encrypted value as a base64-encoded string.
- *
- * @async
- * @param {string} plaintext - The string to encrypt.
- * @returns {Promise<string>} The encrypted string, base64 encoded.
- * @throws {Error} If encryption fails or key retrieval fails.
+ * Tvingar en ny hämtning av publik nyckel (vid fel).
+ */
+export async function refreshPublicKey(): Promise<void> {
+  cachedKey = await fetchPublicKeyFresh();
+}
+
+/**
+ * Krypterar text med serverns publika nyckel.
  */
 export async function encryptWithPublicKey(plaintext: string): Promise<string> {
   const key = await getCachedPublicKey();
