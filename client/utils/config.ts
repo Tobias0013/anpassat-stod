@@ -1,8 +1,8 @@
 /**
  * Base URL for API calls.
  *
- * Prefers `REACT_APP_API_URL` (set during build/deploy).
- * Falls back to `http://localhost:3000` for local development.
+ * Uses REACT_APP_API_URL injected at build time.
+ * Falls back to http://localhost:3000 for local dev.
  *
  * @constant
  */
