@@ -1,5 +1,16 @@
-import { API_BASE_URL } from "../utils/config";
-const BASE_URL = API_BASE_URL;
+/**
+ * Base URL for API calls.
+ *
+ * Resolution order:
+ * 1. Vite environment variable (VITE_API_URL)
+ * 2. Create React App environment variable (REACT_APP_API_URL)
+ * 3. Fallback to current host with port 3000 (for local development)
+ */
+const BASE_URL =
+  (typeof import.meta !== "undefined" && (import.meta as any).env?.VITE_API_URL) ||
+  (typeof process !== "undefined" && (process as any).env?.REACT_APP_API_URL) ||
+  `${window.location.protocol}//${window.location.hostname}:3000`;
+
 /**
  * Sends a POST request to create a new individual.
  *
