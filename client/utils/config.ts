@@ -1,10 +1,9 @@
 /**
  * Base URL for API calls.
  *
- * Priority:
- * 1) REACT_APP_API_URL (build-time env)
- * 2) If running locally → http://localhost:3000
- * 3) Production fallback → https://anpassat-stod.onrender.com
+ * Source:
+ * - REACT_APP_API_URL (must be set in .env)
+ * - If local, defaults to http://localhost:3000
  */
 export const API_BASE_URL: string = (() => {
   const envUrl =
@@ -17,6 +16,6 @@ export const API_BASE_URL: string = (() => {
       host === "localhost" || host === "127.0.0.1" || host.startsWith("192.168.") || host.endsWith(".local");
     if (isLocal) return "http://localhost:3000";
   }
-  return "https://anpassat-stod.onrender.com";
-})();
 
+  throw new Error("API base URL not configured. Set REACT_APP_API_URL in .env");
+})();
