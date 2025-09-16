@@ -1,12 +1,14 @@
 /**
  * Base URL for API calls.
- * 1) REACT_APP_API_URL (build-time env via webpack)
- * 2) local → http://localhost:3000
- * 3) fallback → https://anpassat-stod.onrender.com
+ *
+ * Priority:
+ * 1) REACT_APP_API_URL (build-time env)
+ * 2) If local → http://localhost:3000
+ * 3) Fallback → https://anpassat-stod.onrender.com
  */
 export const API_BASE_URL: string = (() => {
   const envUrl =
-    (process as any)?.env?.REACT_APP_API_URL || "";
+    (typeof process !== "undefined" && (process as any).env?.REACT_APP_API_URL) || "";
   if (envUrl) return envUrl;
 
   if (typeof window !== "undefined") {
@@ -19,5 +21,5 @@ export const API_BASE_URL: string = (() => {
     if (isLocal) return "http://localhost:3000";
   }
 
-  return "https://anpassat-stod.onrender.com";
+  return "https://anpassat-stod.onrender.com"; 
 })();
