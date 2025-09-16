@@ -1,8 +1,6 @@
 /**
  * RSA encryption helper for sending secrets to the backend.
- * - Fetches the server public key with cache-busting.
- * - Accepts both PKCS#8 (BEGIN PUBLIC KEY) and PKCS#1 (BEGIN RSA PUBLIC KEY).
- * - Caches the parsed key; supports manual refresh on failures.
+ * Uses RSA-OAEP with SHA-256 to match server decryption.
  */
 import forge from "node-forge";
 import { API_BASE_URL } from "../utils/config";
@@ -61,9 +59,11 @@ export async function refreshPublicKey(): Promise<void> {
   cachedKey = await fetchPublicKeyFresh();
 }
 
-/** Encrypt plaintext with the server's public key (base64 out). */
+/** Encrypt plaintext with RSA-OAEP(SHA-256); returns base64 ciphertext. */
 export async function encryptWithPublicKey(plaintext: string): Promise<string> {
   const key = await getCachedPublicKey();
-  const encrypted = key.encrypt(plaintext, "RSAES-PKCS1-V1_5");
-  return forge.util.encode64(encrypted);
+  const encryptedBytes = key.encrypt(plaintext, "RSA-OAEP", {
+    md: forge.md.sha256.create(),
+  });
+  return forge.util.encode64(encryptedBytes);
 }
