@@ -26,7 +26,5 @@ export const API_BASE_URL: string = (() => {
       return "http://localhost:3000";
     }
   }
-
-  console.info("[config] Falling back to https://anpassat-stod.onrender.com");
   return "https://anpassat-stod.onrender.com";
 })();
