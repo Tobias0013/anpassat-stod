@@ -62,6 +62,7 @@ export const authAccount = async (req: Request, res: Response) => {
       }
     }
   } catch(err){
+    console.error("[auth] error:", err);
     res.status(500).json({ message: "Error authenticating account", error: (err as Error).message});
   }
 }
