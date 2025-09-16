@@ -1,15 +1,14 @@
 /**
- * Auth controller: register & login with encrypted fields.
- * - Sends email+username+mail to be compatible with older/newer backends.
- * - Retries once on HTTP 500 by refreshing the public key (handles key rotation).
- * - Logs backend error text to console for debugging; shows friendly UI error.
+ * Auth controller for register & login with encrypted fields.
  */
 import { encryptWithPublicKey, refreshPublicKey } from "../utils/encryption";
 import { API_BASE_URL } from "../utils/config";
 
 const AUTH_URL = `${API_BASE_URL}/auth`;
 
-/** Read error payload from Response (JSON or text). */
+/**
+ * Extracts error details from a failed fetch Response.
+ */
 async function readError(res: Response): Promise<string> {
   const ct = res.headers.get("content-type") || "";
   if (ct.includes("application/json")) {
@@ -19,7 +18,10 @@ async function readError(res: Response): Promise<string> {
   return (await res.text().catch(() => "")).slice(0, 800);
 }
 
-/** POST helper that retries once after refreshing the public key if we see HTTP 500. */
+/**
+ * Performs a POST request, retrying once if the backend returns 500
+ * (refreshes the public key to handle rotation).
+ */
 async function postWithKeyRetry(url: string, body: any): Promise<any> {
   const attempt = () =>
     fetch(url, {
@@ -31,7 +33,6 @@ async function postWithKeyRetry(url: string, body: any): Promise<any> {
   let res = await attempt();
 
   if (res.status === 500) {
-    // eslint-disable-next-line no-console
     console.warn("[auth] 500 received — refreshing public key and retrying once");
     await refreshPublicKey();
     res = await attempt();
@@ -39,7 +40,6 @@ async function postWithKeyRetry(url: string, body: any): Promise<any> {
 
   if (!res.ok) {
     const msg = await readError(res);
-    // eslint-disable-next-line no-console
     console.error(`[auth] ${url} error:`, msg, "Status:", res.status);
     throw new Error(msg || `HTTP ${res.status}`);
   }
@@ -47,52 +47,50 @@ async function postWithKeyRetry(url: string, body: any): Promise<any> {
   return res.json();
 }
 
-/** Registers a new user (fields encrypted client-side). */
+/**
+ * Registers a new user (fields encrypted client-side).
+ */
 export async function registerUser(email: string, password: string): Promise<any> {
   const encEmail = await encryptWithPublicKey(email);
   const encPassword = await encryptWithPublicKey(password);
 
-  // Send ALL common keys to cover backend variations
   const body = {
-    email: encEmail,      // <- new/likely expected
-    username: encEmail,   // <- legacy
-    mail: encEmail,       // <- legacy
+    email: encEmail,
+    username: encEmail,
+    mail: encEmail,
     password: encPassword,
   };
-
-  // eslint-disable-next-line no-console
-  console.log("[registerUser] URL:", `${AUTH_URL}/register`);
-  // eslint-disable-next-line no-console
-  console.log("[registerUser] Payload lengths:", {
-    email: body.email.length,
-    username: body.username.length,
-    mail: body.mail.length,
-    password: body.password.length,
-  });
 
   return postWithKeyRetry(`${AUTH_URL}/register`, body);
 }
 
-/** Authenticates a user and stores the JWT token. */
+/**
+ * Authenticates a user and stores the JWT token.
+ */
 export async function loginUser(email: string, password: string): Promise<any> {
   const encEmail = await encryptWithPublicKey(email);
   const encPassword = await encryptWithPublicKey(password);
 
-  // Send BOTH names so backend finds the right one
   const body = {
-    email: encEmail,      // <- new/likely expected
-    username: encEmail,   // <- legacy
+    email: encEmail,
+    username: encEmail,
     password: encPassword,
   };
 
-  // eslint-disable-next-line no-console
-  console.log("[loginUser] URL:", `${AUTH_URL}/login`);
-  // eslint-disable-next-line no-console
-  console.log("[loginUser] Payload lengths:", {
+  // Debug info
+  console.group("[loginUser]");
+  console.log("API_BASE_URL:", API_BASE_URL);
+  console.log("Auth endpoint:", `${AUTH_URL}/login`);
+  console.log("Payload lengths:", {
     email: body.email.length,
     username: body.username.length,
     password: body.password.length,
   });
+  console.log("Env snapshot:", {
+    REACT_APP_API_URL: (process as any)?.env?.REACT_APP_API_URL,
+    NODE_ENV: (process as any)?.env?.NODE_ENV,
+  });
+  console.groupEnd();
 
   const data = await postWithKeyRetry(`${AUTH_URL}/login`, body);
   localStorage.setItem("token", data.token);
