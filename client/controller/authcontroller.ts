@@ -1,4 +1,3 @@
-// auth.ts
 import { encryptWithPublicKey, refreshPublicKey } from "../utils/encryption";
 import { API_BASE_URL } from "../utils/config";
 

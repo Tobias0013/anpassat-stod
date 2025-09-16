@@ -9,7 +9,10 @@
 export const API_BASE_URL: string = (() => {
   const envUrl = process.env.REACT_APP_API_URL || "";
 
-  if (envUrl) return envUrl;
+  if (envUrl) {
+    console.info("[config] Using REACT_APP_API_URL:", envUrl);
+    return envUrl;
+  }
 
   if (typeof window !== "undefined") {
     const host = window.location.hostname;
@@ -18,8 +21,12 @@ export const API_BASE_URL: string = (() => {
       host === "127.0.0.1" ||
       host.startsWith("192.168.") ||
       host.endsWith(".local");
-    if (isLocal) return "http://localhost:3000";
+    if (isLocal) {
+      console.info("[config] Running locally, using http://localhost:3000");
+      return "http://localhost:3000";
+    }
   }
 
+  console.info("[config] Falling back to https://anpassat-stod.onrender.com");
   return "https://anpassat-stod.onrender.com";
 })();
