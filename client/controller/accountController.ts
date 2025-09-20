@@ -54,9 +54,6 @@ export async function fetchAccountIndividuals(): Promise<any[]> {
   if (!accountId) throw new Error("Account ID missing in token.");
 
   const url = `${ACCOUNTS_URL}/${accountId}/individuals`;
-  // eslint-disable-next-line no-console
-  console.log("Calling URL:", url);
-
   const data = await getWithAuth(url, token);
   return data.individuals ?? [];
 }

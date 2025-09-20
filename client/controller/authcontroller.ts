@@ -29,16 +29,12 @@ async function postWithKeyRetry(url: string, body: unknown): Promise<any> {
   let res = await attempt();
 
   if (res.status === 500) {
-    // eslint-disable-next-line no-console
-    console.warn("[auth] 500 received — refreshing public key and retrying once");
     await refreshPublicKey();
     res = await attempt();
   }
 
   if (!res.ok) {
     const msg = await readError(res);
-    // eslint-disable-next-line no-console
-    console.error(`[auth] ${url} error:`, msg, "Status:", res.status);
     throw new Error(msg || `HTTP ${res.status}`);
   }
 
