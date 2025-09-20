@@ -32,7 +32,7 @@ module.exports = {
       template: "./client/index.html",
       filename: "./index.html",
     }),
-    new Dotenv(),
+    new Dotenv({ systemvars: true }),
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
