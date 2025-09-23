@@ -16,6 +16,13 @@ export default function FormList() {
   const forms = ["Habilitering"];
 
   return (
+    <div>
+      <ButtonComp
+              key={"back"}
+              text="Tillbaka"
+              onClick={() => navigate("/dashboard")}
+              className="back-button"
+            />
     <section className="formlist-section">
       <div className="formlist-container">
         <h1 className="formlist-heading">Välj formulär</h1>
@@ -31,5 +38,6 @@ export default function FormList() {
         </div>
       </div>
     </section>
+    </div>
   );
 }

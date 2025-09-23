@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import TextArea from "../../component/textArea/textArea";
 import ButtonComp from "../../component/buttonComp/buttonComp";
 import {
@@ -19,7 +20,7 @@ const EventOfTheDay: React.FC = () => {
 
   const CATEGORY_LABEL = "Färdtjänst";
   const CATEGORY_ENUM: "TRANSPORT" = "TRANSPORT";
-  const [sendCategory, setSendCategory] = useState<boolean>(false);
+  const [sendCategory, setSendCategory] = useState<string>("");
 
   const individualId = localStorage.getItem("individualId");
   const individualName = localStorage.getItem("individualName");
@@ -74,7 +75,7 @@ const EventOfTheDay: React.FC = () => {
       const created = await createEventForIndividual({
         message: text.trim(),
         individualId,
-        category: CATEGORY_ENUM,
+        category: sendCategory,
       });
       setEvents((prev) => sortNewest([created, ...prev]));
       setText("");
@@ -94,6 +95,11 @@ const EventOfTheDay: React.FC = () => {
 
   const renderCategoryLabel = (cat?: EventDto["category"]) => {
     if (cat === "TRANSPORT") return "Färdtjänst";
+    if (cat === "SKOLSKJUTS") return "Skolskjuts";
+    if (cat === "HEMMA") return "Hemma";
+    if (cat === "FÖRSKOLA") return "Förskola";
+    if (cat === "SKOLA") return "Skola";
+    if (cat === "FRITID") return "Fritid";
     if (cat === "ÖVRIGT") return "Övrigt";
     return cat ?? "—";
   };
@@ -140,7 +146,16 @@ const EventOfTheDay: React.FC = () => {
     doc.save(`händelse_${safeName}_${safeDate || "datum"}.pdf`);
   };
 
+  const navigate = useNavigate();
+
   return (
+    <div>
+      <ButtonComp
+              key={"back"}
+              text="Tillbaka"
+              onClick={() => navigate("/dashboard")}
+              className="back-button"
+            />
     <div className="event-section">
       <div className="event-container">
         <div className="event-inner">
@@ -156,16 +171,31 @@ const EventOfTheDay: React.FC = () => {
 
           <div className="event-category">
             <div className="event-category-title">Kategori (krävs)</div>
-            <label className="event-category-checkbox">
+            {/* <label className="event-category-checkbox">
               <input
                 type="checkbox"
                 checked={sendCategory}
                 onChange={() => setSendCategory((v) => !v)}
               />
               <span>{CATEGORY_LABEL}</span>
-            </label>
+            </label> */}
+              <select
+                value={sendCategory}
+                onChange={(e) => setSendCategory(e.target.value)}
+              >
+                <option value="" disabled>
+                  Välj kategori
+                </option>
+                <option value="TRANSPORT">Färdtjänst</option>
+                <option value="SKOLSKJUTS">Skolskjuts</option>
+                <option value="HEMMA">Hemma</option>
+                <option value="FÖRSKOLA">Förskola</option>
+                <option value="SKOLA">Skola</option>
+                <option value="FRITID">Fritid</option>
+                <option value="ÖVRIGT">Övrigt</option>
+              </select>
           </div>
-
+          
           <div className="event-form">
             <TextArea
               value={text}
@@ -220,6 +250,7 @@ const EventOfTheDay: React.FC = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };

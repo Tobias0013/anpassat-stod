@@ -1,7 +1,7 @@
 export interface EventDto {
   _id: string;
   eventDate: string;
-  category: "TRANSPORT" | "ÖVRIGT";
+  category: string;
   message: string;
   createdAt?: string;
   updatedAt?: string;
@@ -69,7 +69,7 @@ export async function fetchEventsForIndividual(individualId: string): Promise<Ev
  */
 export async function createEventForIndividual(params: {
   message: string;
-  category: "TRANSPORT" | "ÖVRIGT";
+  category: string;
   individualId?: string;
   eventDate?: string;
 }): Promise<EventDto> {

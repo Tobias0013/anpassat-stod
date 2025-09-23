@@ -190,6 +190,13 @@ export default function FormPage() {
   };
 
   return (
+    <div>
+      <ButtonComp
+              key={"back"}
+              text="Tillbaka"
+              onClick={() => navigate("/formList")}
+              className="back-button"
+            />
     <section className="form-section">
       <div className="form-container">
         {errorMessage && <p className="form-error-message">{errorMessage}</p>}
@@ -328,5 +335,6 @@ export default function FormPage() {
         </div>
       </div>
     </section>
+    </div>
   );
 }
