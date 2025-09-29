@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import TextArea from "../../component/textArea/textArea";
 import ButtonComp from "../../component/buttonComp/buttonComp";
 import {
@@ -8,7 +9,6 @@ import {
 } from "../../controller/eventController";
 import "./eventOfTheDay.css";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
 
 const EventOfTheDay: React.FC = () => {
   const [text, setText] = useState("");
@@ -18,8 +18,7 @@ const EventOfTheDay: React.FC = () => {
   const [errMsg, setErrMsg] = useState<string>("");
 
   const CATEGORY_LABEL = "Färdtjänst";
-  const CATEGORY_ENUM: "TRANSPORT" = "TRANSPORT";
-  const [sendCategory, setSendCategory] = useState<boolean>(false);
+  const [sendCategory, setSendCategory] = useState<string>("");
 
   const individualId = localStorage.getItem("individualId");
   const individualName = localStorage.getItem("individualName");
@@ -74,7 +73,7 @@ const EventOfTheDay: React.FC = () => {
       const created = await createEventForIndividual({
         message: text.trim(),
         individualId,
-        category: CATEGORY_ENUM,
+        category: sendCategory,
       });
       setEvents((prev) => sortNewest([created, ...prev]));
       setText("");
@@ -94,129 +93,196 @@ const EventOfTheDay: React.FC = () => {
 
   const renderCategoryLabel = (cat?: EventDto["category"]) => {
     if (cat === "TRANSPORT") return "Färdtjänst";
+    if (cat === "SKOLSKJUTS") return "Skolskjuts";
+    if (cat === "HEMMA") return "Hemma";
+    if (cat === "FÖRSKOLA") return "Förskola";
+    if (cat === "SKOLA") return "Skola";
+    if (cat === "FRITID") return "Fritid";
     if (cat === "ÖVRIGT") return "Övrigt";
     return cat ?? "—";
   };
 
-  // --- PDF helper: download a single event as PDF ---
-  const downloadEventPDF = (ev: EventDto) => {
+  // --- Simple: download ALL events into ONE PDF (no autotable) ---
+  const downloadAllEventsPDF = () => {
+    if (!events.length) {
+      setErrMsg("Det finns inga händelser att spara.");
+      return;
+    }
+
     const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const margin = 48;
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
 
-    const title = "Dagens händelse";
-    const dateStr = fmtDateTime(ev.updatedAt || ev.eventDate);
-    const categoryStr = renderCategoryLabel(ev.category);
+    const maxWidth = pageW - margin * 2;
+    const lineH = 14;
+    let y = margin;
+
     const individStr = individualName || individualId || "—";
-    const left = 48;
-    let y = 64;
 
+    // Header
     doc.setFont("helvetica", "bold");
     doc.setFontSize(18);
-    doc.text(title, left, y);
+    doc.text("Händelser", margin, y);
     y += 24;
 
     doc.setFont("helvetica", "normal");
     doc.setFontSize(12);
-    doc.text(`Individ: ${individStr}`, left, y);
+    doc.text(`Individ: ${individStr}`, margin, y);
     y += 18;
-    doc.text(`Datum: ${dateStr}`, left, y);
-    y += 18;
-    doc.text(`Kategori: ${categoryStr}`, left, y);
-    y += 28;
+    doc.text(`Genererad: ${new Date().toLocaleString("sv-SE")}`, margin, y);
+    y += 20;
 
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(14);
-    doc.text("Meddelande", left, y);
-    y += 16;
+    // Helper for page break
+    const ensureSpace = (needed: number) => {
+      if (y + needed > pageH - margin) {
+        doc.addPage();
+        y = margin;
+      }
+    };
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(12);
+    // One block per event
+    events.forEach((ev, idx) => {
+      const dateStr = fmtDateTime(ev.updatedAt || ev.eventDate);
+      const catStr = renderCategoryLabel(ev.category);
+      const msgLines = doc.splitTextToSize(ev.message || "", maxWidth);
 
-    const maxWidth = doc.internal.pageSize.getWidth() - left * 2;
-    const lines = doc.splitTextToSize(ev.message || "", maxWidth);
-    doc.text(lines, left, y);
+      const blockHeight =
+        16 + // title
+        lineH + // meta (kategori)
+        10 + // gap before label
+        lineH + // "Meddelande:"
+        msgLines.length * 12 + // message lines
+        16; // bottom gap
+
+      ensureSpace(blockHeight);
+
+      // Title
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text(`${idx + 1}. ${dateStr}`, margin, y);
+      y += 16;
+
+      // Meta
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.text(`Kategori: ${catStr}`, margin, y);
+      y += lineH;
+
+      y += 10;
+      doc.setFont("helvetica", "bold");
+      doc.text("Meddelande:", margin, y);
+      y += lineH - 2;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(12);
+      doc.text(msgLines, margin, y);
+      y += msgLines.length * 12 + 16;
+    });
 
     const safeName = (individStr || "individ").toString().replace(/[^\w\-]+/g, "_");
-    const safeDate = (ev.updatedAt || ev.eventDate || "").toString().replace(/[: ]+/g, "_");
-    doc.save(`händelse_${safeName}_${safeDate || "datum"}.pdf`);
+    const today = new Date().toISOString().slice(0, 10);
+    doc.save(`handelser_${safeName}_${today}.pdf`);
   };
 
+  const navigate = useNavigate();
+
   return (
-    <div className="event-section">
-      <div className="event-container">
-        <div className="event-inner">
-          <h1 className="event-heading">Dagens händelse</h1>
+    <div>
+      <ButtonComp
+        key={"back"}
+        text="Tillbaka"
+        onClick={() => navigate("/dashboard")}
+        className="back-button"
+      />
+      <div className="event-section">
+        <div className="event-container">
+          <div className="event-inner">
+            <h1 className="event-heading">Dagens händelse</h1>
 
-          {(individualName || individualId) && (
-            <p className="event-meta">
-              Individ: <strong>{individualName || individualId}</strong>
-            </p>
-          )}
+            {(individualName || individualId) && (
+              <p className="event-meta">
+                Individ: <strong>{individualName || individualId}</strong>
+              </p>
+            )}
 
-          {errMsg && <p className="event-error">{errMsg}</p>}
+            {errMsg && <p className="event-error">{errMsg}</p>}
 
-          <div className="event-category">
-            <div className="event-category-title">Kategori (krävs)</div>
-            <label className="event-category-checkbox">
-              <input
-                type="checkbox"
-                checked={sendCategory}
-                onChange={() => setSendCategory((v) => !v)}
-              />
-              <span>{CATEGORY_LABEL}</span>
-            </label>
-          </div>
-
-          <div className="event-form">
-            <TextArea
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="Vad hände idag?"
-              className="event-textarea"
-            />
-            <ButtonComp
-              className="auth-btn"
-              text={saving ? "Sparar..." : "Spara"}
-              onClick={handleSave}
-            />
-          </div>
-
-          <div className="event-history">
-            <div className="event-history-header">
-              <h2>Historik</h2>
-              <span className="event-history-count">({events.length})</span>
+            <div className="event-category">
+              <div className="event-category-title">Kategori (krävs)</div>
+              <select
+                value={sendCategory}
+                onChange={(e) => setSendCategory(e.target.value)}
+              >
+                <option value="" disabled>
+                  Välj kategori
+                </option>
+                <option value="TRANSPORT">Färdtjänst</option>
+                <option value="SKOLSKJUTS">Skolskjuts</option>
+                <option value="HEMMA">Hemma</option>
+                <option value="FÖRSKOLA">Förskola</option>
+                <option value="SKOLA">Skola</option>
+                <option value="FRITID">Fritid</option>
+                <option value="ÖVRIGT">Övrigt</option>
+              </select>
             </div>
 
-            {fetching && <p className="event-history-loading">Laddar...</p>}
-            {!fetching && events.length === 0 && (
-              <p className="event-history-empty">Inga händelser sparade ännu.</p>
-            )}
+            <div className="event-form">
+              <TextArea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder="Vad hände idag?"
+                className="event-textarea"
+              />
+              <ButtonComp
+                className="auth-btn"
+                text={saving ? "Sparar..." : "Spara"}
+                onClick={handleSave}
+              />
+            </div>
 
-            {!fetching && events.length > 0 && (
-              <ul className="event-list">
-                {events.map((ev) => (
-                  <li key={ev._id} className="event-item">
-                    <div className="event-item-header">
-                      <span className="event-item-date">
-                        {fmtDateTime(ev.updatedAt || ev.eventDate)}
-                      </span>
-                      {ev.category && (
-                        <span className="event-item-cat">
-                          {renderCategoryLabel(ev.category)}
+            <div className="event-history">
+              <div
+                className="event-history-header"
+                style={{ display: "flex", alignItems: "center", gap: 12 }}
+              >
+                <h2 style={{ margin: 0 }}>Historik</h2>
+                <span className="event-history-count">({events.length})</span>
+                <div style={{ marginLeft: "auto" }}>
+                  <ButtonComp
+                    className="pdf-btn"
+                    text="Spara alla händelser som PDF"
+                    onClick={downloadAllEventsPDF}
+                  />
+                </div>
+              </div>
+
+              {fetching && <p className="event-history-loading">Laddar...</p>}
+              {!fetching && events.length === 0 && (
+                <p className="event-history-empty">Inga händelser sparade ännu.</p>
+              )}
+
+              {!fetching && events.length > 0 && (
+                <ul className="event-list">
+                  {events.map((ev) => (
+                    <li key={ev._id} className="event-item">
+                      <div className="event-item-header">
+                        <span className="event-item-date">
+                          {fmtDateTime(ev.updatedAt || ev.eventDate)}
                         </span>
-                      )}
-                      <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
-                        <ButtonComp
-                          className="pdf-btn"
-                          text="Spara som PDF"
-                          onClick={() => downloadEventPDF(ev)}
-                        />
+                        {ev.category && (
+                          <span className="event-item-cat">
+                            {renderCategoryLabel(ev.category)}
+                          </span>
+                        )}
+                        {/* Per-event PDF button removed */}
                       </div>
-                    </div>
-                    <div className="event-item-msg">{ev.message}</div>
-                  </li>
-                ))}
-              </ul>
-            )}
+                      <div className="event-item-msg">{ev.message}</div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -225,4 +291,3 @@ const EventOfTheDay: React.FC = () => {
 };
 
 export default EventOfTheDay;
-

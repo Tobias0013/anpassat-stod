@@ -2,6 +2,11 @@ import mongoose, { Schema, Document, Types } from "mongoose";
 
 export enum EventCategory {
     TRANSPORT = "TRANSPORT",
+    SKOLSKJUTS = "SKOLSKJUTS",
+    HEMMA = "HEMMA",
+    FÖRSKOLA = "FÖRSKOLA",
+    SKOLA = "SKOLA",
+    FRITID = "FRITID",
     // KOMMUN = "KOMMUN",
     ÖVRIGT = "ÖVRIGT"
 }

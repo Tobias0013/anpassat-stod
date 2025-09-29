@@ -178,6 +178,13 @@ export default function Result() {
   }, [individualId, loading, errorMessage, total, forms, navigate]);
 
   return (
+    <div>
+      <ButtonComp
+              key={"back"}
+              text="Tillbaka"
+              onClick={() => navigate("/dashboard")}
+              className="back-button"
+            />
     <section className="form-section">
       <div className="form-container">
         <div className="form-form">
@@ -194,5 +201,6 @@ export default function Result() {
         </div>
       </div>
     </section>
+    </div>
   );
 }
