@@ -14,6 +14,7 @@
   resize: none;
   overflow: hidden;
   box-sizing: border-box;
+  min-height: 4rem; /* Set a minimum height */
 }
 
 /**
