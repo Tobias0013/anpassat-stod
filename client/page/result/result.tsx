@@ -156,6 +156,10 @@ export default function Result() {
                               {a.granted && (
                                 <div><span className="answer-label">Beviljad datum:</span> {fmtDate(a.grantedDate)}</div>
                               )}
+                              <div><span className="answer-label">Avslagen:</span> {yesNo(!a.granted)}</div>
+                              {!a.granted && (
+                                <div><span className="answer-label">Avslagen datum:</span> {fmtDate(a.deniedDate)}</div>
+                              )}
                               <div><span className="answer-label">Uppfyller standard:</span> {yesNo(a.fitmentStandard)}</div>
                               {!a.fitmentStandard && (
                                 <div className="answer-feedback">
