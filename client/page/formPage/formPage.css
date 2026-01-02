@@ -41,6 +41,19 @@
     margin-bottom: 2rem;
   }
   
+  .form-question-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+  
+  .form-question-header .form-h2 {
+    margin-bottom: 0;
+    margin: 0;
+  }
+  
   .form-subtitle {
     font-size: 1.6rem;
     margin: 1rem 0;
