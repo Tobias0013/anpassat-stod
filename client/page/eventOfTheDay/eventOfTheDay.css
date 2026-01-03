@@ -1,18 +1,22 @@
 .event-section {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* move box up nearer the back button */
+  padding-top: 2.5rem;
   height: 100vh;
   background: var(--background-color);
 }
 
-.event-container {
+  .event-container {
   border-radius: 10px;
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25),
               0 10px 10px rgba(0, 0, 0, 0.22);
   position: relative;
-  width: 50rem;
-  height: 48rem;
+  width: 100%;
+  max-width: 900px; /* match other pages */
+  min-height: 75vh; /* show more content initially so single new event doesn't force scroll */
+  height: auto;
+  max-height: 95vh;
   display: flex;
   flex-direction: column;
   background-color: var(--contrast-color);
@@ -40,14 +44,21 @@
   margin: -12px 0 8px;
   color: #444;
   text-align: left;
+  font-size: 1.6rem; /* larger for readability */
 }
 
 .event-category {
   margin: 6px 0 10px;
   text-align: left;
 }
-.event-category-title { font-weight: 600; margin-bottom: 6px; }
+.event-category-title { font-weight: 600; margin-bottom: 6px; font-size: 1.4rem; }
 .event-category-checkbox { display: inline-flex; align-items: center; gap: 8px; }
+
+.event-category select {
+  font-size: 1.6rem;
+  padding: 0.6rem 0.5rem;
+  border-radius: 8px;
+}
 
 .event-form {
   display: flex;
@@ -61,14 +72,12 @@
 }
 
 .event-textarea {
-  background-color: #eee;
-  border: none;
-  padding: 1.2rem 1.5rem;
+  /* Use the shared .text-area styles from the reusable component
+     and apply a slightly larger font for this page */
   width: 100%;
-  font-size: 2rem;
-  border-radius: 8px;
-  resize: none;
-  min-height: 250px;
+  min-height: 220px; /* larger by default so textarea is more prominent */
+  font-size: 1.8rem;
+  padding: 1rem;
 }
 
 .auth-btn {
@@ -99,8 +108,8 @@
   align-items: center;
   gap: 12px;
 }
-.event-history-header h2 { margin: 0; font-size: 1.6rem; }
-.event-history-count { color: #666; }
+.event-history-header h2 { margin: 0; font-size: 1.8rem; }
+.event-history-count { color: #666; font-size: 1.4rem; }
 .event-history-actions { margin-left: auto; }
 
 .event-history-loading,
@@ -111,15 +120,16 @@
   padding: 0;
   margin: 10px 0 0;
   display: grid;
-  gap: 10px;
+  gap: 12px;
 }
 
 .event-item {
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 12px 14px;
   text-align: left;
+  font-size: 1.6rem; /* larger item text */
 }
 
 .event-item-header {
@@ -127,19 +137,19 @@
   align-items: center;
   gap: 10px;
   color: #444;
-  font-size: 0.95rem;
-  margin-bottom: 6px;
+  font-size: 1.2rem;
+  margin-bottom: 8px;
 }
-.event-item-date { font-weight: 600; }
+.event-item-date { font-weight: 600; font-size: 1.2rem; }
 .event-item-cat {
   margin-left: auto;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border: 1px solid #e5e7eb;
   border-radius: 999px;
-  font-size: 0.85rem;
+  font-size: 1rem;
   background: #f9fafb;
 }
-.event-item-msg { white-space: pre-wrap; line-height: 1.45; }
+.event-item-msg { white-space: pre-wrap; line-height: 1.5; font-size: 1.6rem; }
 
 .pdf-btn {
   padding: 6px 12px;
@@ -158,4 +168,18 @@
 
 @media only screen and (orientation: portrait) {
   .event-container { margin-bottom: 10rem; }
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 480px) {
+  .event-inner { padding: 0 16px 18px; }
+  .event-meta { font-size: 1.2rem; }
+  .event-category-title { font-size: 1.1rem; }
+  .event-category select { font-size: 1.2rem; }
+  .event-textarea { font-size: 1.4rem; min-height: 140px; }
+  .event-history-header h2 { font-size: 1.4rem; }
+  .event-item { font-size: 1.3rem; padding: 10px; }
+  .event-item-msg { font-size: 1.3rem; }
+  .event-item-date { font-size: 1.1rem; }
+  .auth-btn { padding: 0.9rem 1.4rem; font-size: 1.6rem; }
 }
