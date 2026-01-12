@@ -160,10 +160,19 @@
   color: white;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin: 0;
 }
 
 .pdf-btn:hover {
   background-color: var(--secondary-color);
+}
+
+.pdf-date label {
+  font-size: 1.4rem;
+}
+
+.pdf-date input {
+  font-size: 1rem;
 }
 
 @media only screen and (orientation: portrait) {
