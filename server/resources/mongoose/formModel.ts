@@ -10,6 +10,8 @@ const AnswerSchema = new mongoose.Schema({
   appliedDate: { type: Date, default: null },
   granted: { type: Boolean, default: false },
   grantedDate: { type: Date, default: null },
+  denied: { type: Boolean, default: false },
+  deniedDate: { type: Date, default: null },
   fitmentStandard: { type: Boolean, default: false },
   feedback: { type: String, default: "" }
 }, { _id: false });

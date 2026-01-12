@@ -10,6 +10,8 @@ export interface FormAnswer {
   appliedDate: string | null;
   granted: boolean;
   grantedDate: string | null;
+  denied: boolean;
+  deniedDate: string | null;
   fitmentStandard: boolean;
   feedback: string;
 }
