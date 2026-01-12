@@ -8,10 +8,11 @@ import DateInput from "../../component/dateInput/dateInput";
 import Slider from "../../component/Slider/Slider";
 import TextArea from "../../component/textArea/textArea";
 import ButtonComp from "../../component/buttonComp/buttonComp";
+import InfoTooltip from "../../component/infoTooltip/infoTooltip";
 
 import { submitFormToBackend, FormAnswer } from "../../controller/formController";
-import { questions, answers, futureOptions } from "./habiliteringsQuestions";
-import { set } from "mongoose";
+import { questions, answers, futureOptions, explanations } from "./habiliteringsQuestions";
+import { set } from "mongoose";       
 
 /**
  * FormPage component handles a multi-step form submission flow for a habilitering form.
@@ -218,7 +219,10 @@ export default function FormPage() {
         {successMessage && <p className="form-success-message">{successMessage}</p>}
         <div className="form-form">
           <h1 className="form-h1">Fråga {currentIndex + 1} av {questions.length}</h1>
-          <h2 className="form-h2">{questions[currentIndex]}</h2>
+          <div className="form-question-header">
+            <h2 className="form-h2">{questions[currentIndex]}</h2>
+            <InfoTooltip text={explanations[currentIndex]} position="bottom" />
+          </div>
 
           {/* INGET BEHOV */}
           <div className="form-checkbox-container">

@@ -1,0 +1,126 @@
+.info-tooltip-container {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  margin-left: 8px;
+}
+
+.info-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  transition: transform 0.2s ease;
+}
+
+.info-icon:hover {
+  transform: scale(1.1);
+}
+
+.info-icon:focus {
+  outline: 2px solid #4a90e2;
+  border-radius: 50%;
+}
+
+.info-tooltip {
+  position: absolute;
+  background-color: #333;
+  color: #fff;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 1.4;
+  max-width: 720px;
+  min-width: 320px;
+  width: auto;
+  box-sizing: border-box;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+/* Tooltip arrow pointer */
+.info-tooltip::after {
+  content: "";
+  position: absolute;
+  border: 6px solid transparent;
+}
+
+/* Top position (default) */
+.info-tooltip-top {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 8px;
+}
+
+.info-tooltip-top::after {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-top-color: #333;
+}
+
+/* Bottom position */
+.info-tooltip-bottom {
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 8px;
+}
+
+.info-tooltip-bottom::after {
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border-bottom-color: #333;
+}
+
+/* Left position */
+.info-tooltip-left {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-right: 8px;
+}
+
+.info-tooltip-left::after {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-left-color: #333;
+}
+
+/* Right position */
+.info-tooltip-right {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  margin-left: 8px;
+}
+
+.info-tooltip-right::after {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-right-color: #333;
+}
+
+/* Responsive: allow tooltip to grow on small screens without overflowing viewport */
+@media (max-width: 720px) {
+  .info-tooltip {
+    max-width: calc(100vw - 32px);
+    min-width: 160px;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    right: auto !important;
+  }
+}

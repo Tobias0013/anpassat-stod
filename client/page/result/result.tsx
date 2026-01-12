@@ -5,27 +5,9 @@ import ButtonComp from "../../component/buttonComp/buttonComp";
 import { fetchFormsForIndividual, FormDto, FormAnswer } from "../../controller/resultController";
 import { questions } from "../formPage/habiliteringsQuestions";
 
+import jsPDF from "jspdf";
 import "./resultPage.css";
 
-/**
- * Result component displays all forms for the currently selected individual.
- * It retrieves the individual ID and name from localStorage and fetches
- * associated forms from the backend. Each form is rendered inline with
- * its answers mapped to the corresponding questions.
- *
- * The page includes loading, error, and empty states for a smooth user experience.
- * Form metadata such as last updated date is displayed, while form IDs are hidden
- * for now (commented out for future use).
- *
- * @example
- * return (
- *   <Result />
- * )
- *
- * @returns {JSX.Element} The rendered result page component.
- *
- * @throws {Error} Displays an error message if fetching forms fails.
- */
 export default function Result() {
   const navigate = useNavigate();
 
@@ -72,17 +54,136 @@ export default function Result() {
     return isNaN(t) ? "—" : new Date(t).toLocaleDateString("sv-SE");
   }
 
-  // NEW: shows label if not a parseable date (e.g. "1 månad")
   function fmtDateOrLabel(d?: string | null) {
     if (!d) return "—";
     const t = Date.parse(d);
     if (!isNaN(t)) return new Date(t).toLocaleDateString("sv-SE");
-    return d; // fallback to the stored label
+    return d;
   }
 
   function yesNo(v?: boolean) {
     return v ? "Ja" : "Nej";
   }
+
+  // --------------------------------------------------------
+  // ⭐ NEW: Generate a single PDF containing ALL forms
+  // --------------------------------------------------------
+  const downloadAllFormsPDF = () => {
+    if (!forms.length) {
+      alert("Det finns inga formulär att spara.");
+      return;
+    }
+
+    const doc = new jsPDF({ unit: "pt", format: "a4" });
+    const margin = 48;
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const maxWidth = pageW - margin * 2;
+    let y = margin;
+
+    const individStr = individualName || individualId || "—";
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(18);
+    doc.text("Formulärresultat", margin, y);
+    y += 24;
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+    doc.text(`Individ: ${individStr}`, margin, y);
+    y += 18;
+    doc.text(`Genererad: ${new Date().toLocaleString("sv-SE")}`, margin, y);
+    y += 26;
+
+    const ensureSpace = (needed: number) => {
+      if (y + needed > pageH - margin) {
+        doc.addPage();
+        y = margin;
+      }
+    };
+
+    forms.forEach((f, formIndex) => {
+      const updated = f.lastUpdatedDate || f.updatedAt || f.createdAt || null;
+      const answers = Array.isArray(f.answers) ? f.answers : [];
+
+      // Section header
+      const formTitle = `${formIndex + 1}. ${f.type ? f.type.charAt(0).toUpperCase() + f.type.slice(1) : "Formulär"}`;
+      ensureSpace(40);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(14);
+      doc.text(formTitle, margin, y);
+      y += 18;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+      doc.text(`Uppdaterad: ${updated ? new Date(updated).toLocaleString("sv-SE") : "—"}`, margin, y);
+      y += 22;
+
+      if (!answers.length) {
+        ensureSpace(20);
+        doc.text("Inga svar inskickade.", margin, y);
+        y += 24;
+        return;
+      }
+
+      answers.forEach((a: FormAnswer, idx: number) => {
+        const qText =
+          Array.isArray(questions) && questions[idx] ? questions[idx] : `Fråga ${idx + 1}`;
+
+        const msgLines = doc.splitTextToSize(qText, maxWidth);
+
+        ensureSpace(18 + msgLines.length * 12);
+        doc.setFont("helvetica", "bold");
+        doc.text(`${idx + 1}. ${msgLines}`, margin, y);
+        y += msgLines.length * 12 + 8;
+
+        doc.setFont("helvetica", "normal");
+        doc.setFontSize(11);
+
+        const addLine = (label: string, value: string) => {
+          const line = `${label}: ${value}`;
+          const lh = 14;
+          ensureSpace(lh);
+          doc.text(line, margin + 14, y);
+          y += lh;
+        };
+
+        addLine("Behov", yesNo(a.need));
+        addLine("Framtida behov", yesNo(a.futureNeed));
+        if (a.futureNeed) addLine("Framtida datum", fmtDateOrLabel(a.futureNeedDate));
+
+        if (a.need) {
+          addLine("Prioritet", a.priority?.toString() || "—");
+          addLine("Ansökt", yesNo(a.applied));
+          if (a.applied) addLine("Ansökt datum", fmtDate(a.appliedDate));
+
+          addLine("Beviljad", yesNo(a.granted));
+          if (a.granted) addLine("Beviljad datum", fmtDate(a.grantedDate));
+
+          addLine("Uppfyller standard", yesNo(a.fitmentStandard));
+
+          if (!a.fitmentStandard) {
+            const feedbackLines = doc.splitTextToSize(a.feedback || "—", maxWidth - 20);
+            ensureSpace(14 + feedbackLines.length * 12);
+            doc.text("Feedback:", margin + 14, y);
+            y += 14;
+            doc.text(feedbackLines, margin + 28, y);
+            y += feedbackLines.length * 12;
+          }
+        }
+
+        y += 12;
+      });
+
+      y += 20;
+    });
+
+    const safeName = (individStr || "individ").toString().replace(/[^\w\-]+/g, "_");
+    const today = new Date().toISOString().slice(0, 10);
+    doc.save(`formular_${safeName}_${today}.pdf`);
+  };
+
+  // --------------------------------------------------------
 
   const total = forms.length;
 
@@ -115,11 +216,7 @@ export default function Result() {
                     {f.type ? f.type.charAt(0).toUpperCase() + f.type.slice(1) : "Formulär"}
                   </h3>
                   <div className="result-meta">
-                    {/* <span>Form ID: <code>{f.formId}</code></span> */}
                     <span>Uppdaterad: {updated ? new Date(updated).toLocaleString("sv-SE") : "—"}</span>
-                    {/* Status används inte just nu, implementera i framtid?
-                    <span>Status: <strong>{f.complete ? "Färdig" : "Pågående"}</strong></span>
-                    */}
                   </div>
                 </div>
               </header>
@@ -184,27 +281,40 @@ export default function Result() {
   return (
     <div>
       <ButtonComp
-              key={"back"}
-              text="Tillbaka"
-              onClick={() => navigate("/dashboard")}
-              className="back-button"
-            />
-    <section className="form-section">
-      <div className="form-container">
-        <div className="form-form">
-          <h1 className="form-h1">Resultat</h1>
+        key={"back"}
+        text="Tillbaka"
+        onClick={() => navigate("/dashboard")}
+        className="back-button"
+      />
 
-          <div className="result-header">
-            <span className="result-header-name">
-              Individ: <strong>{individualName || individualId}</strong>
-            </span>
-            {total > 0 && <span className="result-header-count">{total} formulär</span>}
+      <section className="form-section">
+        <div className="form-container">
+          <div className="form-form">
+            <h1 className="form-h1">Resultat</h1>
+
+            <div className="result-header">
+              <span className="result-header-name">
+                Individ: <strong>{individualName || individualId}</strong>
+              </span>
+
+              {total > 0 && (
+                <>
+                  <span className="result-header-count">{total} formulär</span>
+
+                  {}
+                  <ButtonComp
+                    className="pdf-btn"
+                    text="Spara alla formulär som PDF"
+                    onClick={downloadAllFormsPDF}
+                  />
+                </>
+              )}
+            </div>
+
+            {content}
           </div>
-
-          {content}
         </div>
-      </div>
-    </section>
+      </section>
     </div>
   );
 }

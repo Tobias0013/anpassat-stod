@@ -1,7 +1,8 @@
-.form-section {
+  .form-section {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* move box up nearer the back button */
+    padding-top: 2.5rem;
     height: 100vh;
     background: var(--background-color);
   }
@@ -39,6 +40,19 @@
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 2rem;
+  }
+  
+  .form-question-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+  
+  .form-question-header .form-h2 {
+    margin-bottom: 0;
+    margin: 0;
   }
   
   .form-subtitle {

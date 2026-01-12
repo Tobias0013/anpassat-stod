@@ -1,7 +1,8 @@
-.formlist-section {
+  .formlist-section {
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start; /* move box up nearer the back button */
+    padding-top: 2.5rem;
     height: 100vh;
     background-color: var(--background-color);
   }
@@ -20,8 +21,8 @@
     margin: 0;
     font-size: 4rem;
     font-weight: bold;
-    margin-top: 3rem;
-    margin-bottom: 3rem;
+    margin-top: 1rem; /* reduced so heading sits closer to the back button */
+    margin-bottom: 2rem;
     margin-left: 1rem;
     margin-right: 1rem;
     text-align: center;
@@ -56,7 +57,15 @@
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-left: 10rem;
+    margin-left: 1.5rem; /* keep button near left edge */
+    margin-top: 0.5rem;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .formlist-container { padding: 2.5rem 2rem; max-width: 100%; }
+    .formlist-heading { font-size: 2.2rem; margin-top: 0.5rem; }
+    .back-button { margin-left: 0.75rem; padding: 1rem 1.5rem; font-size: 1.1rem; }
   }
   
   .formlist-button:hover {
