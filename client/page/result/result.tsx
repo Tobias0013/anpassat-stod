@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import ButtonComp from "../../component/buttonComp/buttonComp";
 import { fetchFormsForIndividual, FormDto, FormAnswer } from "../../controller/resultController";
 import { questions } from "../formPage/habiliteringsQuestions";
+import DateInput from "../../component/dateInput/dateInput";
 
 import jsPDF from "jspdf";
 import "./resultPage.css";
@@ -17,6 +18,9 @@ export default function Result() {
   const [forms, setForms] = useState<FormDto[]>([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [pdfStartDate, setPdfStartDate] = useState<Date>(new Date(new Date().setFullYear(new Date().getFullYear() - 1)));
+  const [pdfEndDate, setPdfEndDate] = useState<Date>(new Date());
 
   useEffect(() => {
     const load = async () => {
@@ -102,7 +106,15 @@ export default function Result() {
       }
     };
 
-    forms.forEach((f, formIndex) => {
+    const startDate = pdfStartDate; // Replace with your desired start date
+    const endDate = pdfEndDate; // Replace with your desired end date
+
+    const filteredForms = forms.filter((f) => {
+      const eventDate = new Date(f.lastUpdatedDate || f.updatedAt || f.createdAt || 0);
+      return eventDate >= startDate && eventDate <= endDate;
+    });
+
+    filteredForms.forEach((f, formIndex) => {
       const updated = f.lastUpdatedDate || f.updatedAt || f.createdAt || null;
       const answers = Array.isArray(f.answers) ? f.answers : [];
 
@@ -292,7 +304,7 @@ export default function Result() {
           <div className="form-form">
             <h1 className="form-h1">Resultat</h1>
 
-            <div className="result-header">
+            <div className="result-header" >
               <span className="result-header-name">
                 Individ: <strong>{individualName || individualId}</strong>
               </span>
@@ -302,9 +314,22 @@ export default function Result() {
                   <span className="result-header-count">{total} formulär</span>
 
                   {}
+
+                  <DateInput
+                    className="pdf-date"
+                    text={"Från"}
+                    value={pdfStartDate}
+                    onChange={setPdfStartDate}
+                  />
+                  <DateInput
+                    className="pdf-date"
+                    text={"Till"}
+                    value={pdfEndDate}
+                    onChange={setPdfEndDate}
+                  />
                   <ButtonComp
                     className="pdf-btn"
-                    text="Spara alla formulär som PDF"
+                    text="Spara formulär som PDF"
                     onClick={downloadAllFormsPDF}
                   />
                 </>
