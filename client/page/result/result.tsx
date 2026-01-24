@@ -161,28 +161,49 @@ export default function Result() {
         };
 
         addLine("Behov", yesNo(a.need));
-        addLine("Framtida behov", yesNo(a.futureNeed));
-        if (a.futureNeed) addLine("Framtida datum", fmtDateOrLabel(a.futureNeedDate));
+addLine("Framtida behov", yesNo(a.futureNeed));
 
-        if (a.need) {
-          addLine("Prioritet", a.priority?.toString() || "—");
-          addLine("Ansökt", yesNo(a.applied));
-          if (a.applied) addLine("Ansökt datum", fmtDate(a.appliedDate));
+if (a.futureNeed) {
+  addLine("Framtida datum", fmtDateOrLabel(a.futureNeedDate));
+}
 
-          addLine("Beviljad", yesNo(a.granted));
-          if (a.granted) addLine("Beviljad datum", fmtDate(a.grantedDate));
+if (a.need) {
+  addLine("Prioritet", a.priority?.toString() || "—");
+  addLine("Ansökt", yesNo(a.applied));
 
-          addLine("Uppfyller standard", yesNo(a.fitmentStandard));
+  if (a.applied) {
+    addLine("Ansökt datum", fmtDate(a.appliedDate));
 
-          if (!a.fitmentStandard) {
-            const feedbackLines = doc.splitTextToSize(a.feedback || "—", maxWidth - 20);
-            ensureSpace(14 + feedbackLines.length * 12);
-            doc.text("Feedback:", margin + 14, y);
-            y += 14;
-            doc.text(feedbackLines, margin + 28, y);
-            y += feedbackLines.length * 12;
-          }
-        }
+    addLine("Beviljad", yesNo(a.granted));
+
+    if (a.granted) {
+      addLine("Beviljad datum", fmtDate(a.grantedDate));
+
+      // Only after granted
+      addLine("Uppfyller standard", yesNo(a.fitmentStandard));
+
+      if (!a.fitmentStandard) {
+        const feedbackLines = doc.splitTextToSize(
+          a.feedback || "—",
+          maxWidth - 20
+        );
+
+        ensureSpace(14 + feedbackLines.length * 12);
+        doc.text("Feedback:", margin + 14, y);
+        y += 14;
+        doc.text(feedbackLines, margin + 28, y);
+        y += feedbackLines.length * 12;
+      }
+    } else {
+      // Applied but not granted = denied
+      addLine("Avslagen", yesNo(true));
+
+      if (a.deniedDate) {
+        addLine("Avslagen datum", fmtDate(a.deniedDate));
+      }
+    }
+  }
+}
 
         y += 12;
       });
@@ -248,36 +269,85 @@ export default function Result() {
                         <div className="answer-question">{qText}</div>
 
                         <div className="answer-grid">
-                          <div><span className="answer-label">Behov:</span> {yesNo(a.need)}</div>
-                          <div><span className="answer-label">Framtida behov:</span> {yesNo(a.futureNeed)}</div>
-                          {a.futureNeed && (
-                            <div><span className="answer-label">Framtida datum:</span> {fmtDateOrLabel(a.futureNeedDate)}</div>
-                          )}
+  <div>
+    <span className="answer-label">Behov:</span> {yesNo(a.need)}
+  </div>
 
-                          {a.need && (
-                            <>
-                              <div><span className="answer-label">Prioritet:</span> {a.priority ?? "—"}</div>
-                              <div><span className="answer-label">Ansökt:</span> {yesNo(a.applied)}</div>
-                              {a.applied && (
-                                <div><span className="answer-label">Ansökt datum:</span> {fmtDate(a.appliedDate)}</div>
-                              )}
-                              <div><span className="answer-label">Beviljad:</span> {yesNo(a.granted)}</div>
-                              {a.granted && (
-                                <div><span className="answer-label">Beviljad datum:</span> {fmtDate(a.grantedDate)}</div>
-                              )}
-                              <div><span className="answer-label">Avslagen:</span> {yesNo(!a.granted)}</div>
-                              {!a.granted && (
-                                <div><span className="answer-label">Avslagen datum:</span> {fmtDate(a.deniedDate)}</div>
-                              )}
-                              <div><span className="answer-label">Uppfyller standard:</span> {yesNo(a.fitmentStandard)}</div>
-                              {!a.fitmentStandard && (
-                                <div className="answer-feedback">
-                                  <span className="answer-label">Feedback:</span> {a.feedback || "—"}
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
+  <div>
+    <span className="answer-label">Framtida behov:</span> {yesNo(a.futureNeed)}
+  </div>
+
+  {a.futureNeed && (
+    <div>
+      <span className="answer-label">Framtida datum:</span>{" "}
+      {fmtDateOrLabel(a.futureNeedDate)}
+    </div>
+  )}
+
+  {a.need && (
+    <>
+      <div>
+        <span className="answer-label">Prioritet:</span> {a.priority ?? "—"}
+      </div>
+
+      <div>
+        <span className="answer-label">Ansökt:</span> {yesNo(a.applied)}
+      </div>
+
+      {/* Applied-dependent fields */}
+      {a.applied && (
+        <>
+          <div>
+            <span className="answer-label">Ansökt datum:</span>{" "}
+            {fmtDate(a.appliedDate)}
+          </div>
+
+          <div>
+            <span className="answer-label">Beviljad:</span>{" "}
+            {yesNo(a.granted)}
+          </div>
+
+          {a.granted && (
+            <div>
+              <span className="answer-label">Beviljad datum:</span>{" "}
+              {fmtDate(a.grantedDate)}
+            </div>
+          )}
+
+          {!a.granted && (
+            <>
+              <div>
+                <span className="answer-label">Avslagen:</span> {yesNo(true)}
+              </div>
+
+              <div>
+                <span className="answer-label">Avslagen datum:</span>{" "}
+                {fmtDate(a.deniedDate)}
+              </div>
+            </>
+          )}
+
+          {/* Only after granted */}
+          {a.granted && (
+            <>
+              <div>
+                <span className="answer-label">Uppfyller standard:</span>{" "}
+                {yesNo(a.fitmentStandard)}
+              </div>
+
+              {!a.fitmentStandard && (
+                <div className="answer-feedback">
+                  <span className="answer-label">Feedback:</span>{" "}
+                  {a.feedback || "—"}
+                </div>
+              )}
+            </>
+          )}
+        </>
+      )}
+    </>
+  )}
+</div>
                       </li>
                     );
                   })}
