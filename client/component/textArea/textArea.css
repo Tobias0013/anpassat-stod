@@ -14,7 +14,7 @@
   resize: none;
   overflow: hidden;
   box-sizing: border-box;
-  min-height: 120px; /* ensure textarea is large enough initially (fixes Q6 overflow) */
+  min-height: 4rem; /* Set a minimum height */
 }
 
 /**

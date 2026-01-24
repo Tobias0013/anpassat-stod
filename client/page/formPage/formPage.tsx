@@ -12,6 +12,7 @@ import InfoTooltip from "../../component/infoTooltip/infoTooltip";
 
 import { submitFormToBackend, FormAnswer } from "../../controller/formController";
 import { questions, answers, futureOptions, explanations } from "./habiliteringsQuestions";
+import { set } from "mongoose";       
 
 /**
  * FormPage component handles a multi-step form submission flow for a habilitering form.
@@ -39,6 +40,9 @@ export default function FormPage() {
   const [grantedYes, setGrantedYes] = useState(false);
   const [grantedDate, setGrantedDate] = useState<Date>(new Date());
 
+  const [deniedYes, setDeniedYes] = useState(true);
+  const [deniedDate, setDeniedDate] = useState<Date>(new Date());
+
   const [standardNo, setStandardNo] = useState(false); // "uppfyller inte standard"
   const [feedback, setFeedback] = useState("");
 
@@ -56,6 +60,8 @@ export default function FormPage() {
     setAppliedDate(new Date());
       setGrantedYes(false);
       setGrantedDate(new Date());
+      setDeniedYes(false);
+      setDeniedDate(new Date());
     setStandardNo(false);
     setFeedback("");
   };
@@ -73,6 +79,8 @@ export default function FormPage() {
       appliedDate: appliedYes ? appliedDate.toISOString() : null,
       granted: grantedYes,
       grantedDate: grantedYes ? grantedDate.toISOString() : null,
+      denied: !grantedYes,
+      deniedDate: !grantedYes ? deniedDate.toISOString() : null,
       fitmentStandard: !standardNo, // true = uppfyller standard
       feedback: standardNo ? feedback : "",
     };
@@ -102,6 +110,8 @@ export default function FormPage() {
     setAppliedDate(a.appliedDate ? new Date(a.appliedDate) : new Date());
     setGrantedYes(Boolean(a.granted));
     setGrantedDate(a.grantedDate ? new Date(a.grantedDate) : new Date());
+    setDeniedYes(Boolean(a.denied));
+    setDeniedDate(a.deniedDate ? new Date(a.deniedDate) : new Date());
     setStandardNo(!a.fitmentStandard);
     setFeedback(a.feedback || "");
   }, [currentIndex]);
@@ -140,6 +150,8 @@ export default function FormPage() {
         answers: JSON.parse(JSON.stringify(allAnswers)),
       };
 
+      console.log(payload)
+
       // Inkludera även det absolut senaste svaret om setState ännu inte hunnit flushas
       if (!payload.answers[currentIndex]) {
         const last: FormAnswer = {
@@ -152,6 +164,8 @@ export default function FormPage() {
           appliedDate: appliedYes ? appliedDate.toISOString() : null,
           granted: grantedYes,
           grantedDate: grantedYes ? grantedDate.toISOString() : null,
+          denied: !grantedYes,
+          deniedDate: !grantedYes ? deniedDate.toISOString() : null,
           fitmentStandard: !standardNo,
           feedback: standardNo ? feedback : "",
         };
@@ -165,7 +179,7 @@ export default function FormPage() {
       }
 
     setSuccessMessage("Formulär sparat!");
-    setTimeout(() => navigate("/dashboard"), 1000);
+    setTimeout(() => navigate("/result"), 1000);
     } catch (error: any) {
       console.error(error);
       setErrorMessage("Fel vid formulärinlämning: " + error.message);
@@ -179,6 +193,7 @@ export default function FormPage() {
     if (currentIndex < questions.length - 1) {
       setCurrentIndex((i) => i + 1);
     } else {
+      console.log("SAVED FORM")
       submitForm();
     }
   };
@@ -287,12 +302,19 @@ export default function FormPage() {
               <CheckBox
                 label={answers[6]}
                 checked={!grantedYes}
-                onChange={() => setGrantedYes(false)}
+                onChange={() => {
+                  setGrantedYes(false)
+                  setDeniedYes(true)
+                }
+                }
               />
               <CheckBox
                 label={answers[7]}
                 checked={grantedYes}
-                onChange={() => setGrantedYes(true)}
+                onChange={() => {
+                  setGrantedYes(true)
+                  setDeniedYes(false)
+                }}
               />
             </>
           )}
@@ -302,6 +324,14 @@ export default function FormPage() {
               text={answers[2]}
               value={grantedDate}
               onChange={setGrantedDate}
+            />
+          )}
+
+          {!grantedYes && needYes && appliedYes && (
+            <DateInput
+              text={answers[2]}
+              value={deniedDate}
+              onChange={setDeniedDate}
             />
           )}
 
@@ -334,6 +364,7 @@ export default function FormPage() {
               className="form-btn"
               text={currentIndex === questions.length - 1 ? "Färdig" : "Nästa"}
               onClick={next}
+              //onClick={currentIndex === questions.length - 1 ? () => navigate("/result") : next}
             />
           </div>
         </div>

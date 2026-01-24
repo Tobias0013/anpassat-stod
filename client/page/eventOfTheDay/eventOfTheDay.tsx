@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import TextArea from "../../component/textArea/textArea";
 import ButtonComp from "../../component/buttonComp/buttonComp";
+import DateInput from "../../component/dateInput/dateInput";
 import {
   createEventForIndividual,
   fetchEventsForIndividual,
@@ -16,6 +17,9 @@ const EventOfTheDay: React.FC = () => {
   const [fetching, setFetching] = useState(false);
   const [saving, setSaving] = useState(false);
   const [errMsg, setErrMsg] = useState<string>("");
+
+  const [pdfStartDate, setPdfStartDate] = useState<Date>(new Date(new Date().setFullYear(new Date().getFullYear() - 1)));
+  const [pdfEndDate, setPdfEndDate] = useState<Date>(new Date());
 
   const CATEGORY_LABEL = "Färdtjänst";
   const [sendCategory, setSendCategory] = useState<string>("");
@@ -142,7 +146,15 @@ const EventOfTheDay: React.FC = () => {
     };
 
     // One block per event
-    events.forEach((ev, idx) => {
+    const startDate = pdfStartDate; // Replace with your desired start date
+    const endDate = pdfEndDate; // Replace with your desired end date
+
+    const filteredEvents = events.filter((ev) => {
+      const eventDate = new Date(ev.updatedAt || ev.eventDate);
+      return eventDate >= startDate && eventDate <= endDate;
+    });
+
+    filteredEvents.forEach((ev, idx) => {
       const dateStr = fmtDateTime(ev.updatedAt || ev.eventDate);
       const catStr = renderCategoryLabel(ev.category);
       const msgLines = doc.splitTextToSize(ev.message || "", maxWidth);
@@ -248,10 +260,22 @@ const EventOfTheDay: React.FC = () => {
               >
                 <h2 style={{ margin: 0 }}>Historik</h2>
                 <span className="event-history-count">({events.length})</span>
-                <div style={{ marginLeft: "auto" }}>
+                <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 12 }}>
+                  <DateInput
+                    className="pdf-date"
+                    text={"Från"}
+                    value={pdfStartDate}
+                    onChange={setPdfStartDate}
+                  />
+                  <DateInput
+                    className="pdf-date"
+                    text={"Till"}
+                    value={pdfEndDate}
+                    onChange={setPdfEndDate}
+                  />
                   <ButtonComp
                     className="pdf-btn"
-                    text="Spara alla händelser som PDF"
+                    text="Spara händelser som PDF"
                     onClick={downloadAllEventsPDF}
                   />
                 </div>
