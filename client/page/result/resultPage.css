@@ -55,6 +55,7 @@
 
 .result-header-count {
   opacity: 0.9;
+  margin-right: 20rem;
 }
 
 .result-list {
@@ -63,6 +64,14 @@
   margin: 0;
   display: grid;
   gap: 14px;
+}
+
+.pdf-date label {
+  font-size: 1.4rem;
+}
+
+.pdf-date input {
+  font-size: 1rem;
 }
 
 .result-card {
