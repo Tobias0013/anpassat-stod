@@ -41,7 +41,7 @@ export default function FormPage() {
   const [grantedDate, setGrantedDate] = useState<Date>(new Date());
 
   const [deniedYes, setDeniedYes] = useState(true);
-  const [deniedDate, setDeniedDate] = useState<Date>(new Date());
+  const [deniedDate, setDeniedDate] = useState<Date | null>(null);
 
   const [standardNo, setStandardNo] = useState(false); // "uppfyller inte standard"
   const [feedback, setFeedback] = useState("");
@@ -62,7 +62,7 @@ export default function FormPage() {
       setGrantedDate(new Date());
       setDeniedYes(false);
       setDeniedDate(new Date());
-    setStandardNo(false);
+    setStandardNo(true);
     setFeedback("");
   };
 
@@ -79,8 +79,8 @@ export default function FormPage() {
       appliedDate: appliedYes ? appliedDate.toISOString() : null,
       granted: grantedYes,
       grantedDate: grantedYes ? grantedDate.toISOString() : null,
-      denied: !grantedYes,
-      deniedDate: !grantedYes ? deniedDate.toISOString() : null,
+      denied: appliedYes ? !grantedYes : false,
+      deniedDate: appliedYes ? (!grantedYes ? deniedDate ? deniedDate.toISOString() : null : null) : null,
       fitmentStandard: !standardNo, // true = uppfyller standard
       feedback: standardNo ? feedback : "",
     };
@@ -164,8 +164,8 @@ export default function FormPage() {
           appliedDate: appliedYes ? appliedDate.toISOString() : null,
           granted: grantedYes,
           grantedDate: grantedYes ? grantedDate.toISOString() : null,
-          denied: !grantedYes,
-          deniedDate: !grantedYes ? deniedDate.toISOString() : null,
+          denied: appliedYes ? !grantedYes : false,
+          deniedDate: appliedYes ? (!grantedYes ? deniedDate ? deniedDate.toISOString() : null : null) : null,
           fitmentStandard: !standardNo,
           feedback: standardNo ? feedback : "",
         };
@@ -194,6 +194,7 @@ export default function FormPage() {
       setCurrentIndex((i) => i + 1);
     } else {
       console.log("SAVED FORM")
+      console.log(allAnswers)
       submitForm();
     }
   };
@@ -279,7 +280,16 @@ export default function FormPage() {
               <CheckBox
                 label={answers[4]}
                 checked={!appliedYes}
-                onChange={() => setAppliedYes(false)}
+                onChange={() => {
+                  setAppliedYes(false)
+
+                  // 🔥 Reset dependent state
+                  setGrantedYes(false);
+                  setDeniedYes(false);
+                  setStandardNo(false)
+                  setFeedback("");
+                  setDeniedDate(null);   // or null
+                }}
               />
               <CheckBox
                 label={answers[5]}
@@ -330,7 +340,7 @@ export default function FormPage() {
           {!grantedYes && needYes && appliedYes && (
             <DateInput
               text={answers[2]}
-              value={deniedDate}
+              value={deniedDate ?? new Date()} // Provide a default Date if deniedDate is null
               onChange={setDeniedDate}
             />
           )}
